@@ -1,16 +1,14 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
-const HARDCODED_URL = 'https://swlfljsfujptehmawnai.supabase.co';
-// Please replace this placeholder with your actual Anon Key!
-const HARDCODED_KEY = 'PASTE_YOUR_LONG_ANON_KEY_HERE';
-
 export function createClient() {
   const cookieStore = cookies()
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 
   return createServerClient(
-    HARDCODED_URL,
-    HARDCODED_KEY,
+    url,
+    key,
     {
       cookies: {
         get(name: string) {
