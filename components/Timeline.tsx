@@ -15,7 +15,11 @@ const START_YEAR = 2017;
 const END_YEAR = 2026;
 const YEARS = Array.from({ length: END_YEAR - START_YEAR + 1 }, (_, i) => START_YEAR + i);
 
-export default function Timeline() {
+interface TimelineProps {
+  events?: any[];
+}
+
+export default function Timeline({ events = [] }: TimelineProps) {
   const [photos, setPhotos] = useState<Record<number, string>>({});
   const [loading, setLoading] = useState(true);
   const [uploadingYear, setUploadingYear] = useState<number | null>(null);
@@ -123,6 +127,7 @@ export default function Timeline() {
       <div className="absolute left-1/2 top-4 bottom-4 w-[1px] bg-gradient-to-b from-transparent via-brand-border/80 to-transparent -translate-x-1/2 z-0" />
 
       {YEARS.map((year, index) => {
+        const yearEvent = events?.find((e) => e.year === year);
         return (
           <TimelineCard 
             key={year} 
@@ -131,6 +136,7 @@ export default function Timeline() {
             imageUrl={photos[year]} 
             isUploading={uploadingYear === year}
             onUpload={() => initUpload(year)}
+            eventData={yearEvent}
           />
         );
       })}
@@ -138,7 +144,16 @@ export default function Timeline() {
   );
 }
 
-function TimelineCard({ year, index, imageUrl, isUploading, onUpload }: { year: number, index: number, imageUrl?: string, isUploading: boolean, onUpload: () => void }) {
+interface TimelineCardProps {
+  year: number;
+  index: number;
+  imageUrl?: string;
+  isUploading: boolean;
+  onUpload: () => void;
+  eventData?: any;
+}
+
+function TimelineCard({ year, index, imageUrl, isUploading, onUpload, eventData }: TimelineCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   
   // Use scroll progress roughly tracking when the card enters the viewport
@@ -163,11 +178,17 @@ function TimelineCard({ year, index, imageUrl, isUploading, onUpload }: { year: 
       {/* The glowing dot on the timeline axis */}
       <div className="absolute left-1/2 top-1/2 w-4 h-4 md:w-5 md:h-5 rounded-full bg-brand-gold border-[4px] border-background -translate-x-1/2 -translate-y-1/2 z-20 shadow-[0_0_15px_rgba(212,175,55,0.4)]" />
 
-      {/* Year Display */}
-      <div className={`w-[45%] flex ${isEven ? 'justify-end pr-8 md:pr-24' : 'justify-start pl-8 md:pl-24'}`}>
+      {/* Year and Event Display */}
+      <div className={`w-[45%] flex flex-col ${isEven ? 'items-end pr-8 md:pr-24 text-right' : 'items-start pl-8 md:pl-24 text-left'}`}>
         <h2 className="text-5xl md:text-8xl font-light text-brand-gold/20 tracking-tighter select-none">
           {year}
         </h2>
+        {eventData && (
+          <div className="mt-4">
+            {eventData.title && <h3 className="text-xl md:text-2xl font-light text-foreground">{eventData.title}</h3>}
+            {eventData.description && <p className="text-sm md:text-base text-foreground/60 mt-2 max-w-xs">{eventData.description}</p>}
+          </div>
+        )}
       </div>
 
       {/* Image Card UI */}
