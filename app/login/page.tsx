@@ -2,25 +2,18 @@
 
 import { createClient } from '@/lib/supabase/client'
 import { motion } from 'framer-motion'
-import { LogIn, AlertCircle } from 'lucide-react'
+import { LogIn } from 'lucide-react'
 import { useState } from 'react'
 
 export default function LoginPage() {
   const [authError, setAuthError] = useState<string | null>(null);
 
-  // Next.js statically replaces these string literals at build time
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  const isMissingEnvVars = !url || !key;
-
   const handleLogin = async () => {
-    if (isMissingEnvVars) return;
     setAuthError(null);
 
     try {
-      // Explicitly pass url and key to guarantee they aren't lost in module loading
-      const supabase = createClient(url, key);
+      // Intialize with hardcoded values under the hood
+      const supabase = createClient();
       
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -36,23 +29,6 @@ export default function LoginPage() {
       console.error(err);
       setAuthError(err?.message || "An unexpected error occurred during the login request.");
     }
-  }
-
-  // BIG RED WARNING MESSAGE AS REQUESTED
-  if (isMissingEnvVars) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[70vh] w-full px-4">
-        <div className="w-full max-w-md bg-red-50 border border-red-500 border-4 rounded-3xl p-10 md:p-14 shadow-lg text-center text-red-800">
-          <AlertCircle className="w-16 h-16 mx-auto mb-6 text-red-600 font-bold" />
-          <h1 className="text-2xl md:text-3xl font-black tracking-widest mb-4 uppercase">CONFIGURATION ERROR</h1>
-          <p className="text-base font-medium leading-relaxed">
-            The database environment variables are missing! 
-            <br /><br />
-            Please configure <b>NEXT_PUBLIC_SUPABASE_URL</b> and <b>NEXT_PUBLIC_SUPABASE_ANON_KEY</b> to fix this crash.
-          </p>
-        </div>
-      </div>
-    );
   }
 
   return (
