@@ -23,6 +23,7 @@ export default function Timeline({ events = [] }: TimelineProps) {
   const [photos, setPhotos] = useState<Record<number, TimelinePhoto[]>>({});
   const [loading, setLoading] = useState(true);
   const [uploadingYear, setUploadingYear] = useState<number | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   
   // Lightbox state
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
@@ -114,6 +115,49 @@ export default function Timeline({ events = [] }: TimelineProps) {
     }
   };
 
+  const handleDeletePhoto = async (photo: TimelinePhoto) => {
+    if (!window.confirm("Are you sure you want to delete this memory?")) return;
+
+    setDeletingId(photo.id);
+
+    // Extract path from public URL
+    // e.g., https://.../journey-images/journey/2019-abc.png -> journey/2019-abc.png
+    const urlParts = photo.image_url.split('/journey-images/');
+    const filePath = urlParts.length > 1 ? urlParts[1] : null;
+
+    // Optimistic UI Removal
+    setPhotos((prev) => {
+      const yearPhotos = prev[photo.year] || [];
+      return { ...prev, [photo.year]: yearPhotos.filter(p => p.id !== photo.id) };
+    });
+
+    try {
+      // 1. Delete from storage if path exists
+      if (filePath) {
+        const { error: storageError } = await supabase.storage
+          .from('journey-images')
+          .remove([filePath]);
+          
+        if (storageError) console.error("Error deleting from storage:", storageError);
+      }
+
+      // 2. Delete from DB
+      const { error: dbError } = await supabase
+        .from('timeline_photos')
+        .delete()
+        .eq('id', photo.id);
+
+      if (dbError) throw dbError;
+    } catch (error: any) {
+      console.error("Error deleting memory:", error);
+      alert(`Failed to delete. Error: ${error.message}`);
+      // Revert Optimistic UI by re-fetching
+      fetchPhotos(); 
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   return (
     <>
       <div className="w-full max-w-6xl mx-auto px-4 relative flex flex-col items-center">
@@ -141,6 +185,8 @@ export default function Timeline({ events = [] }: TimelineProps) {
               onUpload={() => initUpload(year)}
               eventData={yearEvent}
               onImageClick={(url) => setLightboxImage(url)}
+              onDelete={handleDeletePhoto}
+              deletingId={deletingId}
             />
           );
         })}
@@ -205,9 +251,11 @@ interface TimelineCardProps {
   onUpload: () => void;
   eventData?: any;
   onImageClick: (url: string) => void;
+  onDelete: (photo: TimelinePhoto) => void;
+  deletingId: string | null;
 }
 
-function TimelineCard({ year, index, album, isUploading, onUpload, eventData, onImageClick }: TimelineCardProps) {
+function TimelineCard({ year, index, album, isUploading, onUpload, eventData, onImageClick, onDelete, deletingId }: TimelineCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   
   const { scrollYProgress } = useScroll({
@@ -246,29 +294,55 @@ function TimelineCard({ year, index, album, isUploading, onUpload, eventData, on
         {/* Scroll Container */}
         <div className={`flex w-full overflow-x-auto gap-4 pb-4 snap-x snap-mandatory hide-scrollbars ${isEven ? 'flex-row' : 'flex-row-reverse'}`}>
           
-          {album.map((photo) => (
-            <div 
-              key={photo.id}
-              onClick={() => onImageClick(photo.image_url)}
-              className="flex-shrink-0 snap-center relative w-[240px] md:w-[280px] aspect-[4/5] cursor-pointer rounded-2xl overflow-hidden backdrop-blur-md bg-white/40 border border-brand-border/40 shadow-[0_15px_30px_rgb(0,0,0,0.06)] hover:shadow-[0_25px_50px_rgb(0,0,0,0.12)] transition-all duration-500 transform hover:-translate-y-2 group"
-            >
-              <Image 
-                src={photo.image_url} 
-                alt={`Memory from ${year}`} 
-                fill 
-                sizes="(max-width: 768px) 50vw, 33vw"
-                className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-500 flex items-center justify-center opacity-0 group-hover:opacity-100 z-10">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="drop-shadow-md">
-                  <path d="M15 3h6v6"></path>
-                  <path d="M9 21H3v-6"></path>
-                  <path d="M21 3l-7 7"></path>
-                  <path d="M3 21l7-7"></path>
-                </svg>
+          {album.map((photo) => {
+            const isDeleting = deletingId === photo.id;
+            return (
+              <div 
+                key={photo.id}
+                className="flex-shrink-0 snap-center relative w-[240px] md:w-[280px] aspect-[4/5] rounded-2xl overflow-hidden backdrop-blur-md bg-white/40 border border-brand-border/40 shadow-[0_15px_30px_rgb(0,0,0,0.06)] hover:shadow-[0_25px_50px_rgb(0,0,0,0.12)] transition-all duration-500 transform hover:-translate-y-2 group"
+              >
+                <div onClick={() => !isDeleting && onImageClick(photo.image_url)} className={`w-full h-full cursor-pointer ${isDeleting ? 'opacity-50' : ''}`}>
+                  <Image 
+                    src={photo.image_url} 
+                    alt={`Memory from ${year}`} 
+                    fill 
+                    sizes="(max-width: 768px) 50vw, 33vw"
+                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-500 flex items-center justify-center opacity-0 group-hover:opacity-100 z-10 pointer-events-none">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="drop-shadow-md">
+                      <path d="M15 3h6v6"></path>
+                      <path d="M9 21H3v-6"></path>
+                      <path d="M21 3l-7 7"></path>
+                      <path d="M3 21l7-7"></path>
+                    </svg>
+                  </div>
+                </div>
+
+                {/* Delete Button overlaid */}
+                {!isDeleting && (
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); onDelete(photo); }}
+                    className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-black/40 hover:bg-black/70 backdrop-blur-md flex items-center justify-center text-white/80 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all duration-300"
+                    title="Delete Memory"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M3 6h18"></path>
+                      <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                      <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                    </svg>
+                  </button>
+                )}
+
+                {/* Deleting Spinner overlaid */}
+                {isDeleting && (
+                  <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+                     <div className="w-8 h-8 border-2 border-white/80 border-t-transparent rounded-full animate-spin" />
+                  </div>
+                )}
               </div>
-            </div>
-          ))}
+            );
+          })}
 
           {/* Persistent "Add Memory" Card */}
           <div 
