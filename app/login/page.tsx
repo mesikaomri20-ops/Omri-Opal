@@ -2,18 +2,36 @@
 
 import { createClient } from '@/lib/supabase/client'
 import { motion } from 'framer-motion'
-import { LogIn } from 'lucide-react'
+import { LogIn, AlertCircle } from 'lucide-react'
 
 export default function LoginPage() {
-  const supabase = createClient()
+  const isMissingEnvVars = !process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const supabase = !isMissingEnvVars ? createClient() : null;
 
   const handleLogin = async () => {
+    if (!supabase) return;
+    
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${location.origin}/auth/callback`,
+        // Enforce redirect home explicitly
+        redirectTo: `${location.origin}/auth/callback?next=/`,
       },
     })
+  }
+
+  if (isMissingEnvVars) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[70vh] w-full px-4">
+        <div className="w-full max-w-md bg-red-50 border border-red-200 rounded-3xl p-10 md:p-14 shadow-lg text-center text-red-800">
+          <AlertCircle className="w-12 h-12 mx-auto mb-4 text-red-500 opacity-80" />
+          <h1 className="text-xl md:text-2xl font-medium tracking-wide mb-4">Configuration Error</h1>
+          <p className="text-sm font-light leading-relaxed">
+            The database environment variables are missing. Please configure <b>NEXT_PUBLIC_SUPABASE_URL</b> and <b>NEXT_PUBLIC_SUPABASE_ANON_KEY</b> in your .env or Vercel settings to enable login.
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return (
