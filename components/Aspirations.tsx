@@ -59,6 +59,7 @@ export default function Aspirations() {
 
     if (error) {
       console.error("Error inserting aspiration:", error);
+      alert(`Failed to save! Check Supabase SQL/RLS policies. Error: ${error.message}`);
       setAspirations(prev => prev.filter(a => a.id !== tempId)); // Rollback
     } else if (data) {
       // Replace temporary ID with real DB ID
