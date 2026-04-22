@@ -9,13 +9,14 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "#0a0a0a",
-        foreground: "#e5e5e5",
+        background: "#FAF9F6", // Off-white
+        foreground: "#2A2A2A", // Deep Charcoal
         brand: {
-          neon: "#39ff14",
-          crimson: "#ff0033",
-          dark: "#121212",
-          border: "#333333"
+          gold: "#D4AF37", // Muted Gold
+          sage: "#9AAB89", // Sage Green
+          light: "#F5F3EC",
+          dark: "#1A1A1A",
+          border: "#E8E6E1"
         }
       },
     },
