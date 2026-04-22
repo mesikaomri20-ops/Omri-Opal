@@ -7,9 +7,13 @@ import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 import { User } from "@supabase/supabase-js";
 
-const navLinks = [
+const publicLinks = [
   { name: "Home", path: "/" },
+];
+
+const authLinks = [
   { name: "Our Journey", path: "/our-journey" },
+  { name: "Adventures", path: "/adventures" },
   { name: "The Vault", path: "/the-vault" },
 ];
 
@@ -44,7 +48,7 @@ export default function Navbar() {
         </Link>
         
         <nav className="hidden md:flex items-center space-x-10">
-          {navLinks.map((link) => {
+          {[...publicLinks, ...(user ? authLinks : [])].map((link) => {
             const isActive = pathname === link.path;
             
             return (
