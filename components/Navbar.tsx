@@ -14,7 +14,6 @@ const publicLinks = [
 const authLinks = [
   { name: "Our Journey", path: "/our-journey" },
   { name: "Adventures", path: "/adventures" },
-  { name: "The Vault", path: "/the-vault" },
 ];
 
 export default function Navbar() {
