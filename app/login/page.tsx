@@ -18,7 +18,7 @@ export default function LoginPage({ searchParams }: { searchParams: { error?: st
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `https://omri-opal.vercel.app/auth/callback?next=/`,
+          redirectTo: `${location.origin}/auth/callback?next=/`,
         },
       });
 
