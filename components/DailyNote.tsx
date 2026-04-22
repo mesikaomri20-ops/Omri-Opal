@@ -3,13 +3,28 @@
 import { motion } from "framer-motion";
 import { PenLine } from "lucide-react";
 
-export default function DailyNote() {
-  const currentDate = new Date().toLocaleDateString("en-US", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+export interface Note {
+  id: number;
+  content: string;
+  date: string;
+}
+
+export default function DailyNote({ note }: { note: Note | null }) {
+  const displayDate = note?.date 
+    ? new Date(note.date).toLocaleDateString("en-US", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })
+    : new Date().toLocaleDateString("en-US", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+
+  const displayContent = note?.content || "As we continue building this capsule, everyday moments turn into lasting memories.";
 
   return (
     <motion.div 
@@ -26,12 +41,12 @@ export default function DailyNote() {
           <PenLine className="w-4 h-4 text-brand-gold" />
         </div>
         
-        <p className="text-sm md:text-base leading-relaxed text-foreground/80 font-light italic text-center mx-auto mb-8">
-          "As we continue building this capsule, everyday moments turn into lasting memories."
+        <p className="text-sm md:text-base leading-relaxed text-foreground/80 font-light italic text-center mx-auto mb-8 whitespace-pre-line">
+          "{displayContent}"
         </p>
         
         <div className="border-t border-brand-border/40 pt-4 flex items-center justify-between">
-          <span className="text-xs uppercase tracking-widest text-foreground/40">{currentDate}</span>
+          <span className="text-xs uppercase tracking-widest text-foreground/40">{displayDate}</span>
           <div className="w-1.5 h-1.5 rounded-full bg-brand-gold"></div>
         </div>
       </div>

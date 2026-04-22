@@ -1,8 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { createClient } from "@/lib/supabase/client";
+import { useEffect, useState } from "react";
+import { User } from "@supabase/supabase-js";
 
 const navLinks = [
   { name: "Home", path: "/" },
@@ -12,6 +15,26 @@ const navLinks = [
 
 export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const supabase = createClient();
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [supabase.auth]);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push("/");
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full backdrop-blur-md bg-background/80 border-b border-brand-border/50 transition-colors duration-300">
@@ -44,10 +67,26 @@ export default function Navbar() {
               </Link>
             );
           })}
+          
+          {user ? (
+            <button 
+              onClick={handleLogout} 
+              className="text-sm font-medium tracking-wider uppercase transition-colors text-brand-gold hover:opacity-80"
+            >
+              Logout
+            </button>
+          ) : (
+            <Link 
+              href="/login" 
+              className="text-sm font-medium tracking-wider uppercase transition-colors text-foreground/70 hover:text-brand-gold"
+            >
+              Login
+            </Link>
+          )}
         </nav>
         
         {/* Mobile menu toggle could go here, keeping minimal for now */}
-        <div className="md:hidden flex items-center">
+        <div className="md:hidden flex items-center gap-4">
           <span className="text-xs uppercase tracking-widest text-brand-gold">Menu</span>
         </div>
       </div>

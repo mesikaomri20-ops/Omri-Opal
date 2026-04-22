@@ -3,39 +3,20 @@
 import { motion } from "framer-motion";
 import { Image as ImageIcon } from "lucide-react";
 
-// Placeholder data describing the user's high-quality generated events.
-const timelineEvents = [
-  {
-    id: 1,
-    year: "2017",
-    title: "Where It All Began",
-    description: "A chance encounter that sparked a connection we couldn't ignore. The beginning of our shared story.",
-    align: "left",
-  },
-  {
-    id: 2,
-    year: "2020",
-    title: "Building Our Home",
-    description: "Moving in together and turning a house into a home filled with endless laughter and a few burnt dinners.",
-    align: "right",
-  },
-  {
-    id: 3,
-    year: "2023",
-    title: "The Next Chapter",
-    description: "A magical evening, a beautiful question, and the easiest 'Yes' ever spoken. Engaged and ready for forever.",
-    align: "left",
-  },
-  {
-    id: 4,
-    year: "2026",
-    title: "The Ultimate Celebration",
-    description: "December 10th. Surrounding ourselves with the people we love to celebrate the rest of our lives.",
-    align: "right",
-  }
-];
+export interface TimelineEvent {
+  id: number;
+  year: string;
+  title: string;
+  description: string;
+  image_url: string | null;
+  align: string;
+}
 
-export default function Timeline() {
+export default function Timeline({ events }: { events: TimelineEvent[] }) {
+  if (!events || events.length === 0) {
+    return <div className="text-center py-20 text-foreground/50">No memories recorded yet...</div>
+  }
+
   return (
     <div className="relative w-full max-w-4xl mx-auto py-20 px-4 md:px-0">
       
@@ -43,7 +24,7 @@ export default function Timeline() {
       <div className="absolute left-[40px] md:left-1/2 top-0 bottom-0 w-[1px] bg-brand-border md:-translate-x-1/2 transform origin-top"></div>
 
       <div className="flex flex-col space-y-24">
-        {timelineEvents.map((event, index) => {
+        {events.map((event) => {
           const isLeft = event.align === "left";
 
           return (
@@ -53,8 +34,8 @@ export default function Timeline() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className={`relative flex items-center md:justify-between w-full
-                ${!isLeft ? "md:flex-row-reverse" : "md:flex-row"}
+              className={`relative flex flex-col md:flex-row items-center md:justify-between w-full
+                ${!isLeft ? "md:flex-row-reverse" : ""}
                 pl-[80px] md:pl-0`}
             >
               
@@ -64,7 +45,7 @@ export default function Timeline() {
               </div>
 
               {/* Content Card */}
-              <div className={`w-full md:w-[45%] flex flex-col pt-6 md:pt-0
+              <div className={`w-full md:w-[45%] flex flex-col pt-6 md:pt-0 mb-6 md:mb-0
                 ${isLeft ? "md:items-end md:text-right" : "md:items-start md:text-left"}`}>
                 
                 <span className="text-brand-gold text-xs font-semibold tracking-widest mb-3 uppercase">
@@ -81,10 +62,17 @@ export default function Timeline() {
 
               </div>
 
-              {/* Image Placeholder */}
-              <div className="hidden md:flex w-[45%] aspect-[4/3] bg-brand-light/40 border border-brand-border rounded-xl items-center justify-center relative overflow-hidden group">
-                <ImageIcon className="w-8 h-8 text-brand-gold/30 transition-transform duration-500 group-hover:scale-110" />
-                <div className="absolute inset-0 bg-gradient-to-tr from-brand-gold/5 outline-none pointer-events-none"></div>
+              {/* Image Box */}
+              <div className="w-full md:w-[45%] aspect-[4/3] bg-brand-light/40 border border-brand-border rounded-xl flex items-center justify-center relative overflow-hidden group">
+                {event.image_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={event.image_url} alt={event.title} className="w-full h-full object-cover" />
+                ) : (
+                  <>
+                    <ImageIcon className="w-8 h-8 text-brand-gold/30 transition-transform duration-500 group-hover:scale-110" />
+                    <div className="absolute inset-0 bg-gradient-to-tr from-brand-gold/5 outline-none pointer-events-none"></div>
+                  </>
+                )}
               </div>
 
             </motion.div>

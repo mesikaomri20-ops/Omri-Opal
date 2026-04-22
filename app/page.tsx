@@ -1,7 +1,21 @@
 import CountdownTimer from "@/components/CountdownTimer";
 import DailyNote from "@/components/DailyNote";
+import { createClient } from "@/lib/supabase/server";
 
-export default function Home() {
+export const revalidate = 0;
+
+export default async function Home() {
+  const supabase = createClient();
+  
+  // Fetch latest daily note
+  const { data: notes, error } = await supabase
+    .from('daily_notes')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(1);
+
+  const latestNote = notes && notes.length > 0 ? notes[0] : null;
+
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] w-full max-w-6xl mx-auto">
       
@@ -16,7 +30,7 @@ export default function Home() {
       {/* Divider */}
       <div className="w-1px h-24 md:h-32 bg-gradient-to-b from-brand-border to-transparent my-8"></div>
       
-      <DailyNote />
+      <DailyNote note={latestNote} />
       
     </div>
   );
