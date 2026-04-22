@@ -5,16 +5,21 @@ import { motion } from 'framer-motion'
 import { LogIn, AlertCircle } from 'lucide-react'
 
 export default function LoginPage() {
-  const isMissingEnvVars = !process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  const supabase = !isMissingEnvVars ? createClient() : null;
+  // Hard-read the variables here to ensure Next.js bundles them into the client JS
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  const isMissingEnvVars = !url || !key;
 
   const handleLogin = async () => {
-    if (!supabase) return;
+    if (isMissingEnvVars) return;
+    
+    // Correctly pass the anon_key (and url) down to the client dynamically
+    const supabase = createClient(url, key);
     
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        // Enforce redirect home explicitly
         redirectTo: `${location.origin}/auth/callback?next=/`,
       },
     })
@@ -27,7 +32,7 @@ export default function LoginPage() {
           <AlertCircle className="w-12 h-12 mx-auto mb-4 text-red-500 opacity-80" />
           <h1 className="text-xl md:text-2xl font-medium tracking-wide mb-4">Configuration Error</h1>
           <p className="text-sm font-light leading-relaxed">
-            The database environment variables are missing. Please configure <b>NEXT_PUBLIC_SUPABASE_URL</b> and <b>NEXT_PUBLIC_SUPABASE_ANON_KEY</b> in your .env or Vercel settings to enable login.
+            The database environment variables are missing. Please configure <b>NEXT_PUBLIC_SUPABASE_URL</b> and <b>NEXT_PUBLIC_SUPABASE_ANON_KEY</b> to enable login.
           </p>
         </div>
       </div>
