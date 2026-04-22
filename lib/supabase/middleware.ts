@@ -7,7 +7,7 @@ export async function updateSession(request: NextRequest) {
   })
 
   const url = 'https://swlfljsfujptehmawnai.supabase.co';
-  const key = sb_publishable_7Hn1_00pVP552e7qFcoJ3w_m4VTfEyI';
+  const key = 'sb_publishable_7Hn1_00pVP552e7qFcoJ3w_m4VTfEyI';
 
   const supabase = createServerClient(
     url,
