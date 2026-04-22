@@ -5,8 +5,8 @@ import { motion } from 'framer-motion'
 import { LogIn } from 'lucide-react'
 import { useState } from 'react'
 
-export default function LoginPage() {
-  const [authError, setAuthError] = useState<string | null>(null);
+export default function LoginPage({ searchParams }: { searchParams: { error?: string } }) {
+  const [authError, setAuthError] = useState<string | null>(searchParams?.error || null);
 
   const handleLogin = async () => {
     setAuthError(null);
