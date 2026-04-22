@@ -5,14 +5,18 @@ import { motion } from 'framer-motion'
 import { LogIn } from 'lucide-react'
 import { useState } from 'react'
 
-export default function LoginPage({ searchParams }: { searchParams: { error?: string } }) {
+export default function LoginPage({ searchParams }: { searchParams?: { error?: string } }) {
   const [authError, setAuthError] = useState<string | null>(searchParams?.error || null);
 
+  const envUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const envKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const isMissingEnvVars = !envUrl || !envKey;
+
   const handleLogin = async () => {
+    if (isMissingEnvVars) return;
     setAuthError(null);
 
     try {
-      // Intialize with hardcoded values under the hood
       const supabase = createClient();
       
       const { error } = await supabase.auth.signInWithOAuth({
@@ -29,6 +33,25 @@ export default function LoginPage({ searchParams }: { searchParams: { error?: st
       console.error(err);
       setAuthError(err?.message || "An unexpected error occurred during the login request.");
     }
+  }
+
+  if (isMissingEnvVars) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[70vh] w-full px-4 text-center">
+        <div className="p-8 border-4 border-red-500 bg-red-50 rounded-xl">
+          <h1 className="text-3xl md:text-4xl font-black text-red-600 tracking-widest mb-6">
+            DEBUG: API KEY IS MISSING FROM BROWSER
+          </h1>
+          <p className="text-red-800 font-medium text-lg leading-relaxed">
+            <strong>URL present:</strong> {envUrl ? "YES" : "NO"} <br/>
+            <strong>Key present:</strong> {envKey ? "YES" : "NO"}
+          </p>
+          <p className="text-red-700 mt-4 text-sm max-w-lg mx-auto">
+            Vercel is definitely not passing the variables to the client side. Check that the prefix 'NEXT_PUBLIC_' is exact, and that the environment variables are configured for Production/Preview correctly in Vercel settings, then redeploy.
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return (
