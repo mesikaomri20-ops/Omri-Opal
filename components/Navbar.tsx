@@ -8,13 +8,13 @@ import { useEffect, useState } from "react";
 import { User } from "@supabase/supabase-js";
 
 const publicLinks = [
-  { name: "Home", path: "/" },
+  { name: "בית", path: "/" },
 ];
 
 const authLinks = [
-  { name: "Our Journey", path: "/our-journey" },
-  { name: "Adventures", path: "/adventures" },
-  { name: "Games", path: "/games" },
+  { name: "המסע שלנו", path: "/our-journey" },
+  { name: "הרפתקאות", path: "/adventures" },
+  { name: "משחקים", path: "/games" },
 ];
 
 export default function Navbar() {
@@ -44,7 +44,7 @@ export default function Navbar() {
     <header className="sticky top-0 z-50 w-full backdrop-blur-md bg-background/80 border-b border-brand-border/50 transition-colors duration-300">
       <div className="container mx-auto px-6 h-20 flex items-center justify-between">
         <Link href="/" className="text-xl md:text-2xl font-light tracking-widest text-foreground hover:opacity-80 transition-opacity">
-          OMRI <span className="text-brand-gold">&</span> OPAL
+          עומרי <span className="text-brand-gold">&</span> אופל
         </Link>
         
         <nav className="hidden md:flex items-center space-x-10">
@@ -77,14 +77,14 @@ export default function Navbar() {
               onClick={handleLogout} 
               className="text-sm font-medium tracking-wider uppercase transition-colors text-brand-gold hover:opacity-80"
             >
-              Logout
+              התנתק
             </button>
           ) : (
             <Link 
               href="/login" 
               className="text-sm font-medium tracking-wider uppercase transition-colors text-foreground/70 hover:text-brand-gold"
             >
-              Login
+              התחבר
             </Link>
           )}
         </nav>

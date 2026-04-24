@@ -5,9 +5,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
 import { Sparkles, MapPin, DollarSign, Heart } from "lucide-react";
 
-type Vibe = "Chill" | "Active" | "Romantic" | "";
-type Budget = "Cheap" | "Moderate" | "Fancy" | "";
-type LocationType = "Indoor" | "Outdoor" | "";
+type Vibe = "צ'יל" | "אקטיבי" | "רומנטי" | "";
+type Budget = "זול" | "בינוני" | "יקר" | "";
+type LocationType = "בפנים" | "בחוץ" | "";
 
 interface DateIdea {
   id: string;
@@ -30,14 +30,13 @@ export default function DateGenerator() {
 
   const supabase = createClient();
 
-  // Very simple fallback data just in case the DB is missing or empty
   const fallbackIdeas: DateIdea[] = [
-    { id: "1", title: "Indoor Movie Marathon", description: "Grab the popcorn, build a fort, and watch 3 movies back-to-back.", vibe: "Chill", budget: "Cheap", location_type: "Indoor" },
-    { id: "2", title: "Fancy Dinner & Cocktails", description: "Dress up nice and go to that new upscale restaurant downtown.", vibe: "Romantic", budget: "Fancy", location_type: "Indoor" },
-    { id: "3", title: "Sunset Hike & Picnic", description: "Pack a basket with cheese and wine, hike up a scenic trail to catch the sunset.", vibe: "Active", budget: "Moderate", location_type: "Outdoor" },
-    { id: "4", title: "Stargazing Drive", description: "Drive out from the city lights, lie on the car hood, and watch the stars.", vibe: "Chill", budget: "Cheap", location_type: "Outdoor" },
-    { id: "5", title: "Couples Cooking Class", description: "Learn to make handmade pasta or sushi together.", vibe: "Romantic", budget: "Moderate", location_type: "Indoor" },
-    { id: "6", title: "Rock Climbing", description: "Hit the local bouldering gym and challenge each other on the walls.", vibe: "Active", budget: "Moderate", location_type: "Indoor" },
+    { id: "1", title: "מרתון סרטים בבית", description: "תעשו פופקורן, תבנו אוהל שמיכות ותראו 3 סרטים ברצף.", vibe: "צ'יל", budget: "זול", location_type: "בפנים" },
+    { id: "2", title: "ארוחת ערב יוקרתית וקוקטיילים", description: "תתלבשו יפה ותלכו למסעדה החדשה והשווה בעיר.", vibe: "רומנטי", budget: "יקר", location_type: "בפנים" },
+    { id: "3", title: "טיול שקיעה ופיקניק", description: "תארזו סל עם גבינות ויין, ותטפסו להר כדי לראות את השקיעה.", vibe: "אקטיבי", budget: "בינוני", location_type: "בחוץ" },
+    { id: "4", title: "נסיעה ותצפית כוכבים", description: "סעו מחוץ לעיר, תשכבו על מכסה המנוע ותסתכלו על כוכבים נופלים.", vibe: "צ'יל", budget: "זול", location_type: "בחוץ" },
+    { id: "5", title: "סדנת בישול זוגית", description: "תלמדו להכין פסטה בעבודת יד או סושי ביחד.", vibe: "רומנטי", budget: "בינוני", location_type: "בפנים" },
+    { id: "6", title: "קיר טיפוס", description: "לכו למכון טיפוס ותאתגרו אחד את השנייה על הקירות.", vibe: "אקטיבי", budget: "בינוני", location_type: "בפנים" },
   ];
 
   const handleGenerate = async () => {
@@ -48,37 +47,30 @@ export default function DateGenerator() {
     setErrorMsg("");
 
     try {
-      // Trying to fetch from Supabase table 'date_ideas'
       const { data, error } = await supabase
         .from('date_ideas')
         .select('*')
         .eq('vibe', vibe)
         .eq('budget', budget)
         .eq('location_type', locationType)
-        .limit(10); // get a few
+        .limit(10);
 
       let finalIdeas = data || [];
 
-      // If missing table or empty, use fallback simulation
       if (error || finalIdeas.length === 0) {
-        if (error) console.error("Supabase query error:", error.message);
-        
         finalIdeas = fallbackIdeas.filter(idea => 
           idea.vibe === vibe && idea.budget === budget && idea.location_type === locationType
         );
         
         if (finalIdeas.length === 0) {
-           // If fallbacks don't match exactly, just return some random generic fallbacks to ensure there is always a result
            finalIdeas = [...fallbackIdeas].sort(() => 0.5 - Math.random()).slice(0, 3);
         }
       }
 
-      // Randomize and take up to 3
       const shuffled = finalIdeas.sort(() => 0.5 - Math.random());
       setIdeas(shuffled.slice(0, 3));
     } catch (err) {
-      console.error(err);
-      setErrorMsg("Failed to fetch date ideas. Using fallbacks.");
+      setErrorMsg("שגיאה במשיכת הנתונים. נשתמש בגיבוי.");
       setIdeas(fallbackIdeas.slice(0, 3));
     } finally {
       setLoading(false);
@@ -87,48 +79,45 @@ export default function DateGenerator() {
 
   const getVibeIcon = (v: string) => {
     switch (v) {
-      case "Chill": return <span className="text-xl">☕</span>;
-      case "Active": return <span className="text-xl">🧗</span>;
-      case "Romantic": return <span className="text-xl">🍷</span>;
+      case "צ'יל": return <span className="text-xl">☕</span>;
+      case "אקטיבי": return <span className="text-xl">🧗</span>;
+      case "רומנטי": return <span className="text-xl">🍷</span>;
       default: return null;
     }
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto py-12 px-6 bg-[#FaFaFa]">
+    <div className="w-full max-w-4xl mx-auto py-12 px-6 bg-[#FaFaFa]" dir="rtl">
       <div className="text-center mb-12">
-        <h2 className="text-3xl font-light tracking-wide text-foreground mb-4">Date Night Generator</h2>
-        <p className="text-foreground/60 max-w-xl mx-auto">Can't decide what to do? Let the universe (and our database) decide for you. Answer 3 quick questions and get your perfect date.</p>
+        <h2 className="text-3xl font-light tracking-wide text-foreground mb-4">מחולל דייטים</h2>
+        <p className="text-foreground/60 max-w-xl mx-auto">לא יכולים להחליט מה לעשות? תנו ליקום (ולמסד הנתונים שלנו) להחליט בשבילכם. ענו על 3 שאלות קצרות וקבלו רעיונות לדייט מושלם.</p>
       </div>
 
       <div className="grid md:grid-cols-2 gap-12">
-        {/* Form Selection */}
         <div className="space-y-8 bg-white border border-brand-border/30 p-8 rounded-2xl shadow-sm">
-          {/* Vibe */}
           <div>
-            <label className="text-sm font-semibold tracking-widest text-foreground uppercase flex items-center gap-2 mb-4">
-              <Heart size={16} className="text-brand-gold"/> What's the vibe?
+            <label className="text-sm font-semibold tracking-widest text-foreground flex items-center gap-2 mb-4">
+              <Heart size={16} className="text-brand-gold"/> מה האווירה?
             </label>
             <div className="flex flex-wrap gap-3">
-              {["Chill", "Active", "Romantic"].map(v => (
+              {["צ'יל", "אקטיבי", "רומנטי"].map(v => (
                 <button
                   key={v}
                   onClick={() => setVibe(v as Vibe)}
                   className={`px-4 py-2 rounded-full border text-sm transition-all ${vibe === v ? "bg-brand-gold text-white border-brand-gold shadow-md" : "border-brand-border/50 hover:border-brand-gold text-foreground/80 hover:bg-brand-gold/5"}`}
                 >
-                  {getVibeIcon(v)} <span className="ml-2">{v}</span>
+                  {getVibeIcon(v)} <span className="mr-2">{v}</span>
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Budget */}
           <div>
-            <label className="text-sm font-semibold tracking-widest text-foreground uppercase flex items-center gap-2 mb-4">
-              <DollarSign size={16} className="text-brand-gold"/> Budget?
+            <label className="text-sm font-semibold tracking-widest text-foreground flex items-center gap-2 mb-4">
+              <DollarSign size={16} className="text-brand-gold"/> תקציב?
             </label>
             <div className="flex flex-wrap gap-3">
-              {["Cheap", "Moderate", "Fancy"].map(b => (
+              {["זול", "בינוני", "יקר"].map(b => (
                 <button
                   key={b}
                   onClick={() => setBudget(b as Budget)}
@@ -140,13 +129,12 @@ export default function DateGenerator() {
             </div>
           </div>
 
-          {/* Location */}
           <div>
-            <label className="text-sm font-semibold tracking-widest text-foreground uppercase flex items-center gap-2 mb-4">
-              <MapPin size={16} className="text-brand-gold"/> Indoor or Outdoor?
+            <label className="text-sm font-semibold tracking-widest text-foreground flex items-center gap-2 mb-4">
+              <MapPin size={16} className="text-brand-gold"/> בפנים או בחוץ?
             </label>
             <div className="flex flex-wrap gap-3">
-              {["Indoor", "Outdoor"].map(l => (
+              {["בפנים", "בחוץ"].map(l => (
                 <button
                   key={l}
                   onClick={() => setLocationType(l as LocationType)}
@@ -161,19 +149,18 @@ export default function DateGenerator() {
           <button
             onClick={handleGenerate}
             disabled={!vibe || !budget || !locationType || loading}
-            className="w-full py-4 mt-4 bg-brand-gold text-white rounded-lg flex items-center justify-center gap-2 uppercase tracking-widest text-sm font-semibold hover:bg-brand-gold/90 transition-all disabled:opacity-50"
+            className="w-full py-4 mt-4 bg-brand-gold text-white rounded-lg flex items-center justify-center gap-2 tracking-widest text-sm font-semibold hover:bg-brand-gold/90 transition-all disabled:opacity-50"
           >
             {loading ? (
-              <span className="animate-pulse">Consulting the oracle...</span>
+              <span className="animate-pulse">מתייעץ עם הכוכבים...</span>
             ) : (
               <>
-                Generate IDEAS <Sparkles size={16} />
+                מצא רעיונות <Sparkles size={16} />
               </>
             )}
           </button>
         </div>
 
-        {/* Results */}
         <div className="relative">
           <AnimatePresence mode="wait">
             {!searched && (
@@ -183,30 +170,30 @@ export default function DateGenerator() {
                 className="h-full flex flex-col items-center justify-center text-center p-8 border border-dashed border-brand-border/50 rounded-2xl bg-white/50 text-foreground/40"
               >
                 <Sparkles size={40} className="mb-4 opacity-50" />
-                <p>Awaiting your selections...</p>
+                <p>ממתין לבחירות שלכם...</p>
               </motion.div>
             )}
 
             {searched && !loading && ideas.length > 0 && (
               <motion.div
                 key="results"
-                initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
                 className="space-y-4"
               >
-                <h3 className="text-xs uppercase tracking-widest text-brand-gold mb-6">Your Curated Ideas</h3>
+                <h3 className="text-xs tracking-widest text-brand-gold mb-6">הרעיונות הנבחרים שלכם</h3>
                 {ideas.map((idea, index) => (
                   <motion.div
                     key={idea.id || index}
                     initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.1 }}
                     className="p-6 bg-white border border-brand-border/30 rounded-xl shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group"
                   >
-                    <div className="absolute top-0 left-0 w-1 h-full bg-brand-gold transform -translate-x-full group-hover:translate-x-0 transition-transform"/>
+                    <div className="absolute top-0 right-0 w-1 h-full bg-brand-gold transform translate-x-full group-hover:translate-x-0 transition-transform"/>
                     <h4 className="text-xl font-medium mb-2">{idea.title}</h4>
                     <p className="text-foreground/70 text-sm leading-relaxed">{idea.description}</p>
                     <div className="mt-4 flex gap-2">
-                      <span className="text-[10px] uppercase tracking-wider px-2 py-1 bg-brand-gold/10 text-brand-gold rounded">{idea.vibe}</span>
-                      <span className="text-[10px] uppercase tracking-wider px-2 py-1 bg-brand-gold/10 text-brand-gold rounded">{idea.budget}</span>
-                      <span className="text-[10px] uppercase tracking-wider px-2 py-1 bg-brand-gold/10 text-brand-gold rounded">{idea.location_type}</span>
+                       <span className="text-[10px] tracking-wider px-2 py-1 bg-brand-gold/10 text-brand-gold rounded">{idea.vibe}</span>
+                       <span className="text-[10px] tracking-wider px-2 py-1 bg-brand-gold/10 text-brand-gold rounded">{idea.budget}</span>
+                       <span className="text-[10px] tracking-wider px-2 py-1 bg-brand-gold/10 text-brand-gold rounded">{idea.location_type}</span>
                     </div>
                   </motion.div>
                 ))}
@@ -219,8 +206,8 @@ export default function DateGenerator() {
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                 className="h-full flex flex-col items-center justify-center text-center p-8 border border-brand-border/50 rounded-2xl bg-white text-foreground/60"
               >
-                <p>Oops, we couldn't find a perfect match for that combination.</p>
-                <button onClick={() => { setVibe(""); setBudget(""); setLocationType(""); setSearched(false); }} className="mt-4 text-brand-gold text-sm underline">Reset and try again</button>
+                <p>אופס, לא מצאנו התאמה מושלמת לשילוב הזה.</p>
+                <button onClick={() => { setVibe(""); setBudget(""); setLocationType(""); setSearched(false); }} className="mt-4 text-brand-gold text-sm underline">אפס ונסה שוב</button>
               </motion.div>
             )}
           </AnimatePresence>

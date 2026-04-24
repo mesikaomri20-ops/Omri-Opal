@@ -1,5 +1,5 @@
 import Stopwatch from "@/components/Stopwatch";
-import TravelsTimeline from "@/components/TravelsTimeline";
+import WorldMap from "@/components/WorldMap";
 
 export default function AdventuresPage() {
   return (
@@ -7,13 +7,13 @@ export default function AdventuresPage() {
       {/* Hero */}
       <div className="w-full text-center pt-32 pb-8 px-4 md:px-8 relative">
         <p className="text-xs md:text-sm uppercase tracking-[0.4em] text-brand-gold font-medium mb-6">
-          Together Since · December 31, 2017
+          יחד מאז · 31 בדצמבר, 2017
         </p>
         <h1 className="text-5xl md:text-7xl font-light tracking-wide text-foreground mb-4">
-          Our Adventures.
+          ההרפתקאות שלנו.
         </h1>
         <p className="text-lg md:text-xl text-foreground/60 max-w-2xl mx-auto font-light leading-relaxed mb-4">
-          Every second counts. Every destination tells a story.
+          כל שנייה נחשבת. כל יעד מספר סיפור.
         </p>
 
         {/* Glow */}
@@ -28,12 +28,14 @@ export default function AdventuresPage() {
 
       {/* Section Header */}
       <div className="text-center px-4 mb-12">
-        <p className="text-xs md:text-sm uppercase tracking-[0.4em] text-brand-gold font-medium mb-4">Explore</p>
-        <h2 className="text-3xl md:text-5xl font-light tracking-wide text-foreground">World Travels</h2>
+        <p className="text-xs md:text-sm uppercase tracking-[0.4em] text-brand-gold font-medium mb-4">חוקרים את העולם</p>
+        <h2 className="text-3xl md:text-5xl font-light tracking-wide text-foreground">מפת היעדים</h2>
       </div>
 
-      {/* Travels Timeline */}
-      <TravelsTimeline />
+      {/* World Map */}
+      <div className="w-full max-w-5xl px-4 mx-auto">
+        <WorldMap />
+      </div>
     </div>
   );
 }

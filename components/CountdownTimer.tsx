@@ -41,10 +41,10 @@ export default function CountdownTimer() {
   if (!isMounted) return <div className="h-[200px] w-full flex items-center justify-center animate-pulse bg-brand-light/20 rounded-3xl"></div>;
 
   const timeUnits = [
-    { label: "Days", value: timeLeft.days },
-    { label: "Hours", value: timeLeft.hours.toString().padStart(2, '0') },
-    { label: "Minutes", value: timeLeft.minutes.toString().padStart(2, '0') },
-    { label: "Seconds", value: timeLeft.seconds.toString().padStart(2, '0') },
+    { label: "ימים", value: timeLeft.days },
+    { label: "שעות", value: timeLeft.hours.toString().padStart(2, '0') },
+    { label: "דקות", value: timeLeft.minutes.toString().padStart(2, '0') },
+    { label: "שניות", value: timeLeft.seconds.toString().padStart(2, '0') },
   ];
 
   return (

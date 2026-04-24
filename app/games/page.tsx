@@ -2,8 +2,8 @@ import QuizGame from "@/components/games/QuizGame";
 import DateGenerator from "@/components/games/DateGenerator";
 
 export const metadata = {
-  title: "Games | The Life Capsule",
-  description: "Interactive games and generators for Omri and Opal.",
+  title: "משחקים | קפסולת החיים",
+  description: "משחקים אינטראקטיביים לעומרי ואופל.",
 };
 
 export default function GamesPage() {
@@ -12,10 +12,10 @@ export default function GamesPage() {
       
       {/* Header */}
       <div className="text-center space-y-4 px-4">
-        <p className="text-xs md:text-sm uppercase tracking-[0.4em] text-brand-gold font-medium">Couples Corner</p>
-        <h1 className="text-4xl md:text-5xl font-light tracking-wider text-foreground">Play & Plan</h1>
+        <p className="text-xs md:text-sm uppercase tracking-[0.4em] text-brand-gold font-medium">הפינה הזוגית</p>
+        <h1 className="text-4xl md:text-5xl font-light tracking-wider text-foreground">לשחק ולתכנן</h1>
         <p className="max-w-xl mx-auto text-foreground/60 mt-4 leading-relaxed">
-          Test your knowledge of each other and find exciting new ways to spend time together.
+          בואו נבדוק כמה אתם מכירים אחד את השניה, ונמצא דרכים חדשות לבלות יחד.
         </p>
       </div>
 

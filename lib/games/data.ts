@@ -10,84 +10,84 @@ export interface Question {
 export const coupleQuestions: Question[] = [
   {
     id: "q1",
-    text: "What is my absolute favorite food?",
+    text: "מהו המאכל האהוב עליי ביותר?",
     type: "text"
   },
   {
     id: "q2",
-    text: "What is my biggest pet peeve?",
+    text: "מה הכי מעצבן אותי?",
     type: "multiple-choice",
-    options: ["Loud chewing", "Being late", "Leaving lights on", "Interrupting"]
+    options: ["לעיסות רועשות", "איחורים", "להשאיר אורות דולקים", "שנכנסים לי לדברים"]
   },
   {
     id: "q3",
-    text: "If I could travel anywhere right now, where would it be?",
+    text: "אם הייתי יכול/ה לטוס עכשיו לכל מקום בעולם, לאן הייתי טס/ה?",
     type: "text"
   },
   {
     id: "q4",
-    text: "What movie can I watch over and over again without getting bored?",
+    text: "איזה סרט אני יכול/ה לראות שוב ושוב בלי שיימאס לי?",
     type: "text"
   },
   {
     id: "q5",
-    text: "Am I a morning person or a night owl?",
+    text: "האם אני אדם של בוקר או ציפור לילה?",
     type: "multiple-choice",
-    options: ["Early bird catches the worm", "Night owl all the way", "Neither, I need a nap constantly", "Depends on the coffee"]
+    options: ["משכים קום", "ציפור לילה לגמרי", "אף אחד מהם, אני תמיד צריך/ה שנ"צ", "תלוי בקפה"]
   },
   {
     id: "q6",
-    text: "What is my favorite way to relax after a long day?",
+    text: "איך אני הכי אוהב/ת להירגע אחרי יום ארוך?",
     type: "multiple-choice",
-    options: ["Watching TV", "Reading a book", "Taking a bath/shower", "Working out"]
+    options: ["לראות טלוויזיה", "לקרוא ספר", "מקלחת טובה/אמבטיה", "אימון"]
   },
   {
     id: "q7",
-    text: "What was my first job?",
+    text: "מה הייתה העבודה הראשונה שלי?",
     type: "text"
   },
   {
     id: "q8",
-    text: "Which chore do I hate doing the most?",
+    text: "איזו מטלה בבית אני הכי שונא/ת לעשות?",
     type: "multiple-choice",
-    options: ["Washing dishes", "Vacuuming", "Folding laundry", "Taking out trash"]
+    options: ["לשטוף כלים", "לשאוב אבק", "לקפל כביסה", "לזרוק את הזבל"]
   },
   {
     id: "q9",
-    text: "What did I wear on our first date?",
+    text: "מה לבשתי בדייט הראשון שלנו?",
     type: "text"
   },
   {
     id: "q10",
-    text: "What is my dream car?",
+    text: "מהו רכב החלומות שלי?",
     type: "text"
   },
   {
     id: "q11",
-    text: "If I won the lottery tomorrow, what is the very first thing I would buy?",
+    text: "אם הייתי זוכה מחר בלוטו, מה הדבר הראשון שהייתי קונה?",
     type: "text"
   },
   {
     id: "q12",
-    text: "What is my favorite season?",
+    text: "מהי העונה האהובה עליי?",
     type: "multiple-choice",
-    options: ["Spring", "Summer", "Autumn", "Winter"]
+    options: ["אביב", "קיץ", "סתיו", "חורף"]
   },
   {
     id: "q13",
-    text: "If I had to eat one meal for the rest of my life, what would it be?",
+    text: "אם הייתי צריך/ה לאכול מאכל אחד לשארית חיי, מה זה היה?",
     type: "text"
   },
   {
     id: "q14",
-    text: "What is my hidden talent?",
+    text: "מהו הכישרון החבוי שלי?",
     type: "text"
   },
   {
     id: "q15",
-    text: "Which describes my packing style for a trip?",
+    text: "איך אני בדרך כלל אורז/ת לטיול?",
     type: "multiple-choice",
-    options: ["Pack weeks in advance", "Pack the night before", "Throw things in an hour before leaving", "Make a detailed list and overpack"]
+    options: ["אורז/ת שבועות מראש", "אורז/ת ערב לפני", "זורק/ת דברים למזוודה שעה לפני", "מכין/ה רשימה מפורטת ואורז/ת יותר מדי"]
   }
 ];
 
