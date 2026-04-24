@@ -62,9 +62,9 @@ export default function LoginPage({ searchParams }: { searchParams?: { error?: s
         transition={{ duration: 0.6 }}
         className="w-full max-w-md bg-white border border-brand-border/60 rounded-3xl p-10 md:p-14 shadow-lg text-center relative"
       >
-        <h1 className="text-2xl md:text-3xl font-light tracking-wide text-foreground mb-4">Welcome Back</h1>
-        <p className="text-foreground/60 text-sm font-light mb-8 leading-relaxed">
-          Please sign in to access The Journey, The Vault, and manage your private Life Capsule memories.
+        <h1 className="text-2xl md:text-3xl font-light tracking-wide text-foreground mb-4" dir="rtl">ברוכים השבים</h1>
+        <p className="text-foreground/60 text-sm font-light mb-8 leading-relaxed" dir="rtl">
+          אנא התחבר/י כדי לגשת להרפתקאות במסע שלנו ולנהל את זיכרונות קפסולת החיים הפרטית שלכם.
         </p>
 
         {authError && (
@@ -76,9 +76,10 @@ export default function LoginPage({ searchParams }: { searchParams?: { error?: s
         <button 
           onClick={handleLogin}
           className="w-full relative flex items-center justify-center gap-3 px-6 py-4 bg-brand-dark text-white rounded-xl hover:bg-brand-dark/90 transition-all font-light tracking-wide shadow-md group"
+          dir="ltr"
         >
           <LogIn className="w-4 h-4 opacity-70 group-hover:opacity-100 transition-opacity" />
-          Sign in with Google
+          התחברות עם Google
         </button>
       </motion.div>
     </div>

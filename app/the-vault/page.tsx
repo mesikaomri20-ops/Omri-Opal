@@ -1,5 +1,4 @@
-import { redirect } from "next/navigation";
-
-export default function VaultPage() {
-  redirect("/");
+// Component deprecated and removed completely.
+export default function TheVault() {
+    return null;
 }
