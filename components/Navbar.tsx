@@ -47,7 +47,7 @@ export default function Navbar() {
           עומרי <span className="text-brand-gold">&</span> אופל
         </Link>
         
-        <nav className="hidden md:flex items-center space-x-10">
+        <nav className="hidden md:flex items-center gap-8 md:gap-10" dir="rtl">
           {[...publicLinks, ...(user ? authLinks : [])].map((link) => {
             const isActive = pathname === link.path;
             

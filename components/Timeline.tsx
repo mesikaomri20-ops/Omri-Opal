@@ -125,7 +125,7 @@ export default function Timeline({ events = [] }: TimelineProps) {
       });
     } catch (error: any) {
       console.error("Error uploading file:", error);
-      alert(`Failed to upload. Error: ${error.message}`);
+      alert(`שגיאה בהעלאה. שגיאה: ${error.message}`);
     } finally {
       setUploadingYear(null);
       setSelectedYearForUpload(null);
@@ -134,7 +134,7 @@ export default function Timeline({ events = [] }: TimelineProps) {
   };
 
   const handleDelete = async (item: TimelineMedia) => {
-    if (!window.confirm("Are you sure you want to delete this memory?")) return;
+    if (!window.confirm("האם אתה בטוח שברצונך למחוק זיכרון זה?")) return;
 
     setDeletingId(item.id);
 
@@ -162,7 +162,7 @@ export default function Timeline({ events = [] }: TimelineProps) {
       if (dbError) throw dbError;
     } catch (error: any) {
       console.error("Error deleting memory:", error);
-      alert(`Failed to delete. Error: ${error.message}`);
+      alert(`שגיאה במחיקה. שגיאה: ${error.message}`);
       fetchMedia();
     } finally {
       setDeletingId(null);
@@ -371,6 +371,7 @@ function TimelineCard({ year, index, album, isUploading, onUpload, eventData, on
       ref={cardRef}
       style={{ scale: scaleProgress, opacity: opacityProgress }}
       className={`relative w-full flex items-center justify-between mb-24 md:mb-40 z-10 ${isEven ? "flex-row" : "flex-row-reverse"}`}
+      dir="ltr"
     >
       <div className="absolute left-1/2 top-1/2 w-4 h-4 md:w-5 md:h-5 rounded-full bg-brand-gold border-[4px] border-background -translate-x-1/2 -translate-y-1/2 z-20 shadow-[0_0_15px_rgba(212,175,55,0.4)]" />
 
@@ -445,7 +446,7 @@ function TimelineCard({ year, index, album, isUploading, onUpload, eventData, on
                   <button
                     onClick={(e) => { e.stopPropagation(); onDelete(item); }}
                     className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-black/40 hover:bg-black/70 backdrop-blur-md flex items-center justify-center text-white/80 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all duration-300"
-                    title="Delete Memory"
+                    title="מחיקה"
                   >
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M3 6h18" />
@@ -473,7 +474,7 @@ function TimelineCard({ year, index, album, isUploading, onUpload, eventData, on
             {isUploading ? (
               <div className="flex flex-col items-center space-y-4 z-10">
                 <div className="w-8 h-8 md:w-10 md:h-10 border-2 border-brand-gold border-t-transparent rounded-full animate-spin" />
-                <span className="text-xs font-light text-foreground/60 tracking-[0.2em] uppercase">Uploading</span>
+                <span className="text-xs font-light text-foreground/60 tracking-[0.2em] uppercase">מעלה...</span>
               </div>
             ) : (
               <div className="flex flex-col items-center space-y-4 text-brand-gold/60 group-hover:text-brand-gold transition-colors duration-500">
@@ -483,7 +484,7 @@ function TimelineCard({ year, index, album, isUploading, onUpload, eventData, on
                     <line x1="5" y1="12" x2="19" y2="12" />
                   </svg>
                 </div>
-                <span className="text-xs tracking-[0.2em] font-medium uppercase">{album.length > 0 ? "Add Another" : "Add Memory"}</span>
+                <span className="text-xs tracking-[0.2em] font-medium uppercase">{album.length > 0 ? "הוספו עוד" : `הוסיפו זיכרון ראשון ל-${year}`}</span>
               </div>
             )}
           </div>
