@@ -3,14 +3,15 @@
 @tailwind utilities;
 
 :root {
-  --background: #1A1614;
-  --foreground: #FCFBF4;
+  --background: #FCFBF4;
+  --foreground: #1A1614;
   --gold: #C5A059;
   --beige: #F5F5DC;
-  --border: #3A3330;
+  --border: #E8E1D4;
+  --card: #FFFFFF;
 }
 
-/* ── Base ────────────────────────────── */
+/* ── Base ─────────────────────────────── */
 body {
   color: var(--foreground);
   background: var(--background);
@@ -18,51 +19,48 @@ body {
   letter-spacing: -0.01em;
 }
 
-html {
-  scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }
 
-/* ── Page Transitions ─────────────────── */
+/* ── Page transition ──────────────────── */
 main {
-  animation: fadeSlideUp 0.45s ease-out both;
+  animation: fadeSlideUp 0.4s ease-out both;
 }
-
 @keyframes fadeSlideUp {
-  from { opacity: 0; transform: translateY(14px); }
+  from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 /* ── Scrollbar ────────────────────────── */
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb {
-  background: #3A3330;
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #C5A059;
-}
+::-webkit-scrollbar-thumb { background: #E8E1D4; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #C5A059; }
 
 /* ── Selection ────────────────────────── */
 ::selection {
-  background: rgba(197, 160, 89, 0.25);
-  color: #FCFBF4;
+  background: rgba(197, 160, 89, 0.2);
+  color: #1A1614;
 }
 
 /* ── Utilities ────────────────────────── */
 .hide-scrollbars::-webkit-scrollbar { display: none; }
-.hide-scrollbars {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
+.hide-scrollbars { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* ── Glassmorphism card ───────────────── */
+/* ── Glass card (light version) ──────── */
 .glass-card {
-  background: rgba(252, 251, 244, 0.05);
+  background: rgba(255, 255, 255, 0.75);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(197, 160, 89, 0.15);
+  border: 1px solid rgba(197, 160, 89, 0.2);
   border-radius: 1.25rem;
+}
+
+/* ── Gold-trim white card ─────────────── */
+.premium-card {
+  background: #FFFFFF;
+  border: 1px solid rgba(197, 160, 89, 0.25);
+  border-radius: 1rem;
+  box-shadow: 0 2px 20px rgba(26, 22, 20, 0.06), 0 1px 4px rgba(26, 22, 20, 0.04);
 }
 
 /* ── Gold Glow button ─────────────────── */
@@ -79,16 +77,13 @@ main {
   cursor: pointer;
 }
 .btn-gold:hover {
-  background: rgba(197, 160, 89, 0.12);
+  background: rgba(197, 160, 89, 0.08);
   border-color: #C5A059;
   box-shadow: 0 0 24px rgba(197, 160, 89, 0.2);
 }
-.btn-gold:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
-}
+.btn-gold:disabled { opacity: 0.35; cursor: not-allowed; }
 
-/* ── Handwriting accent ───────────────── */
+/* ── Handwriting gold font ────────────── */
 @import url('https://fonts.googleapis.com/css2?family=Rubik+Wet+Paint&display=swap');
 
 .font-handwriting {
@@ -99,20 +94,17 @@ main {
   background-clip: text;
 }
 
-/* ── 3D Gold Pin ─────────────────────── */
-.map-pin circle.pin-outer {
-  filter: drop-shadow(0 4px 8px rgba(197,160,89,0.5));
-}
-
-/* ── Input base ──────────────────────── */
-input, select, textarea {
-  background: transparent;
-  color: var(--foreground);
-  accent-color: var(--gold);
-}
-
-/* ── Form select fix on dark bg ──────── */
+/* ── Select option fix (light bg) ──────── */
 select option {
-  background: #1A1614;
-  color: #FCFBF4;
+  background: #FFFFFF;
+  color: #1A1614;
+}
+
+/* ── Force dark text in white cards ────── */
+.card-text-dark,
+.card-text-dark * {
+  color: #1A1614 !important;
+}
+.card-text-dark .label-gold {
+  color: #C5A059 !important;
 }

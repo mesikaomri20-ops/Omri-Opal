@@ -41,7 +41,7 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full backdrop-blur-xl bg-background/75 border-b border-brand-border/60 transition-colors duration-300 shadow-[0_1px_40px_rgba(0,0,0,0.4)]">
+    <header className="sticky top-0 z-50 w-full backdrop-blur-xl bg-background/90 border-b border-brand-border transition-colors duration-300 shadow-[0_1px_20px_rgba(26,22,20,0.06)]">
       <div className="container mx-auto px-6 h-20 flex items-center justify-between">
         <Link href="/" className="text-xl md:text-2xl font-light tracking-widest text-foreground hover:opacity-80 transition-opacity">
           עומרי <span className="text-brand-gold">&</span> אופל

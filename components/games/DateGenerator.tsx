@@ -77,9 +77,9 @@ export default function DateGenerator() {
       </div>
 
       <div className="grid md:grid-cols-2 gap-12">
-        <div className="space-y-8 bg-white border border-brand-border/30 p-8 rounded-2xl shadow-sm">
+        <div className="space-y-8 bg-white border border-brand-gold/20 p-8 rounded-2xl shadow-[0_2px_20px_rgba(26,22,20,0.07)]">
           <div>
-            <label className="text-sm font-semibold tracking-widest text-foreground flex items-center gap-2 mb-4">
+            <label className="text-sm font-semibold tracking-widest text-brand-dark flex items-center gap-2 mb-4">
               <Heart size={16} className="text-brand-gold"/> מה האווירה?
             </label>
             <div className="flex flex-wrap gap-3">
@@ -96,7 +96,7 @@ export default function DateGenerator() {
           </div>
 
           <div>
-            <label className="text-sm font-semibold tracking-widest text-foreground flex items-center gap-2 mb-4">
+            <label className="text-sm font-semibold tracking-widest text-brand-dark flex items-center gap-2 mb-4">
               <DollarSign size={16} className="text-brand-gold"/> תקציב?
             </label>
             <div className="flex flex-wrap gap-3">
@@ -113,7 +113,7 @@ export default function DateGenerator() {
           </div>
 
           <div>
-            <label className="text-sm font-semibold tracking-widest text-foreground flex items-center gap-2 mb-4">
+            <label className="text-sm font-semibold tracking-widest text-brand-dark flex items-center gap-2 mb-4">
               <MapPin size={16} className="text-brand-gold"/> בפנים או בחוץ?
             </label>
             <div className="flex flex-wrap gap-3">
@@ -132,7 +132,7 @@ export default function DateGenerator() {
           <button
             onClick={handleGenerate}
             disabled={!vibe || !budget || !locationType || loading}
-            className="w-full py-4 mt-4 bg-brand-gold text-white rounded-lg flex items-center justify-center gap-2 tracking-widest text-sm font-semibold hover:bg-brand-gold/90 transition-all shadow-lg hover:shadow-xl disabled:opacity-50"
+            className="w-full py-4 mt-4 bg-brand-dark text-brand-beige rounded-xl flex items-center justify-center gap-2 tracking-widest text-sm font-semibold hover:bg-brand-gold hover:text-white transition-all shadow-warm-md hover:shadow-gold-glow disabled:opacity-40 border border-transparent hover:border-brand-gold"
           >
             {loading ? (
               <span className="animate-pulse flex items-center gap-2"><Bot size={16}/> המערכת מחשבת רעיונות...</span>
@@ -150,7 +150,7 @@ export default function DateGenerator() {
               <motion.div
                 key="empty"
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                className="h-full flex flex-col items-center justify-center text-center p-8 border border-dashed border-brand-border/50 rounded-2xl bg-white/50 text-foreground/40"
+                className="h-full flex flex-col items-center justify-center text-center p-8 border border-dashed border-brand-border rounded-2xl bg-brand-light text-brand-dark/40"
               >
                 <Bot size={40} className="mb-4 opacity-50" />
                 <p>ממתין לבחירות שלכם כדי לייצר קסם...</p>
@@ -182,8 +182,8 @@ export default function DateGenerator() {
                     className="p-6 bg-white border border-brand-border/30 rounded-xl shadow-[0_10px_20px_rgb(0,0,0,0.03)] hover:shadow-lg transition-all relative overflow-hidden group"
                   >
                     <div className="absolute top-0 right-0 w-1 h-full bg-brand-gold transform translate-x-full group-hover:translate-x-0 transition-transform duration-300"/>
-                    <h4 className="text-xl font-medium mb-3">{idea.title}</h4>
-                    <p className="text-foreground/70 text-sm leading-relaxed">{idea.description}</p>
+                    <h4 className="text-xl font-semibold text-brand-dark mb-3">{idea.title}</h4>
+                    <p className="text-brand-dark/70 text-sm leading-relaxed">{idea.description}</p>
                     <div className="mt-5 flex flex-wrap gap-2">
                        <span className="text-[10px] uppercase font-semibold tracking-wider px-2 py-1 bg-brand-gold/10 text-brand-gold rounded">{idea.vibe}</span>
                        <span className="text-[10px] uppercase font-semibold tracking-wider px-2 py-1 bg-brand-gold/10 text-brand-gold rounded">{idea.budget}</span>
