@@ -61,10 +61,6 @@ export default function DateGenerator() {
         finalIdeas = fallbackIdeas.filter(idea => 
           idea.vibe === vibe && idea.budget === budget && idea.location_type === locationType
         );
-        
-        if (finalIdeas.length === 0) {
-           finalIdeas = [...fallbackIdeas].sort(() => 0.5 - Math.random()).slice(0, 3);
-        }
       }
 
       const shuffled = finalIdeas.sort(() => 0.5 - Math.random());
@@ -206,7 +202,7 @@ export default function DateGenerator() {
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                 className="h-full flex flex-col items-center justify-center text-center p-8 border border-brand-border/50 rounded-2xl bg-white text-foreground/60"
               >
-                <p>אופס, לא מצאנו התאמה מושלמת לשילוב הזה.</p>
+                <p>לא מצאנו רעיון שמתאים בדיוק לכל הפילטרים, אולי ננסה להגמיש קצת את הדרישות?</p>
                 <button onClick={() => { setVibe(""); setBudget(""); setLocationType(""); setSearched(false); }} className="mt-4 text-brand-gold text-sm underline">אפס ונסה שוב</button>
               </motion.div>
             )}
