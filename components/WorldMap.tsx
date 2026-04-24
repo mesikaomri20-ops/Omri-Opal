@@ -244,13 +244,34 @@ export default function WorldMap() {
                 coordinates={[pin.lng, pin.lat]}
                 onMouseEnter={(e) => {
                   const rect = (e.target as Element).getBoundingClientRect();
-                  setTooltipPos({ x: rect.left + window.scrollX, y: rect.top + window.scrollY - 36 });
+                  setTooltipPos({ x: rect.left + window.scrollX, y: rect.top + window.scrollY - 44 });
                   setTooltipContent(`${pin.destination} · ${pin.year}`);
                 }}
                 onMouseLeave={() => setTooltipContent("")}
               >
-                <circle r={3.5} fill="#D4AF37" stroke="#FFFFFF" strokeWidth={1.5} />
-                <circle r={9} fill="rgba(212,175,55,0.3)" className="animate-pulse" />
+                {/* 3D Brushed Gold Drop-Pin */}
+                <g style={{ filter: "drop-shadow(0 4px 8px rgba(197,160,89,0.5))" }}>
+                  {/* Pin body */}
+                  <path
+                    d="M0,-14 C-5,-14 -8,-10 -8,-6 C-8,0 0,8 0,8 C0,8 8,0 8,-6 C8,-10 5,-14 0,-14 Z"
+                    fill="url(#goldGrad)"
+                    stroke="rgba(197,160,89,0.6)"
+                    strokeWidth="0.8"
+                  />
+                  {/* Pin highlight gloss */}
+                  <ellipse cx="-2" cy="-9" rx="2" ry="2.5" fill="rgba(255,255,255,0.3)" />
+                  {/* Pin inner dot */}
+                  <circle cx="0" cy="-6" r="2.5" fill="rgba(15,13,12,0.8)" />
+                  {/* Ground shadow */}
+                  <ellipse cx="0" cy="9" rx="4" ry="1.5" fill="rgba(0,0,0,0.3)" />
+                </g>
+                <defs>
+                  <radialGradient id="goldGrad" cx="35%" cy="30%" r="70%">
+                    <stop offset="0%" stopColor="#E8C97A" />
+                    <stop offset="50%" stopColor="#C5A059" />
+                    <stop offset="100%" stopColor="#8B6914" />
+                  </radialGradient>
+                </defs>
               </Marker>
             ))}
           </ZoomableGroup>

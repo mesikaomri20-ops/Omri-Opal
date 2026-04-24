@@ -5,7 +5,7 @@ import "./globals.css";
 
 import { Heebo } from "next/font/google";
 
-const heebo = Heebo({ subsets: ['hebrew'], weight: ['300', '400', '500', '700'] });
+const heebo = Heebo({ subsets: ['hebrew'], weight: ['300', '400', '500', '700'], display: 'swap' });
 
 export const metadata: Metadata = {
   title: "עומרי ואופל - קפסולת החיים",

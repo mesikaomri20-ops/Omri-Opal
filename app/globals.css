@@ -3,42 +3,116 @@
 @tailwind utilities;
 
 :root {
-  --background: #FAF9F6;
-  --foreground: #2A2A2A;
+  --background: #1A1614;
+  --foreground: #FCFBF4;
+  --gold: #C5A059;
+  --beige: #F5F5DC;
+  --border: #3A3330;
 }
 
+/* ── Base ────────────────────────────── */
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Heebo', system-ui, sans-serif;
   letter-spacing: -0.01em;
 }
 
-/* Custom scrollbar for a premium look */
-::-webkit-scrollbar {
-  width: 6px;
+html {
+  scroll-behavior: smooth;
 }
-::-webkit-scrollbar-track {
-  background: transparent; 
+
+/* ── Page Transitions ─────────────────── */
+main {
+  animation: fadeSlideUp 0.45s ease-out both;
 }
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Scrollbar ────────────────────────── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: #E8E6E1; 
+  background: #3A3330;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #D4AF37; 
+  background: #C5A059;
 }
 
+/* ── Selection ────────────────────────── */
 ::selection {
-  background: rgba(212, 175, 55, 0.2); /* Muted Gold semi-transparent */
-  color: #1A1A1A;
+  background: rgba(197, 160, 89, 0.25);
+  color: #FCFBF4;
 }
 
-/* Utilities */
-.hide-scrollbars::-webkit-scrollbar {
-  display: none;
-}
+/* ── Utilities ────────────────────────── */
+.hide-scrollbars::-webkit-scrollbar { display: none; }
 .hide-scrollbars {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ── Glassmorphism card ───────────────── */
+.glass-card {
+  background: rgba(252, 251, 244, 0.05);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(197, 160, 89, 0.15);
+  border-radius: 1.25rem;
+}
+
+/* ── Gold Glow button ─────────────────── */
+.btn-gold {
+  background: transparent;
+  color: #C5A059;
+  border: 1px solid rgba(197, 160, 89, 0.5);
+  border-radius: 9999px;
+  padding: 0.75rem 2rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.15em;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+.btn-gold:hover {
+  background: rgba(197, 160, 89, 0.12);
+  border-color: #C5A059;
+  box-shadow: 0 0 24px rgba(197, 160, 89, 0.2);
+}
+.btn-gold:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* ── Handwriting accent ───────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Rubik+Wet+Paint&display=swap');
+
+.font-handwriting {
+  font-family: 'Rubik Wet Paint', cursive;
+  background: linear-gradient(135deg, #C5A059 0%, #E8C97A 50%, #C5A059 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── 3D Gold Pin ─────────────────────── */
+.map-pin circle.pin-outer {
+  filter: drop-shadow(0 4px 8px rgba(197,160,89,0.5));
+}
+
+/* ── Input base ──────────────────────── */
+input, select, textarea {
+  background: transparent;
+  color: var(--foreground);
+  accent-color: var(--gold);
+}
+
+/* ── Form select fix on dark bg ──────── */
+select option {
+  background: #1A1614;
+  color: #FCFBF4;
 }
