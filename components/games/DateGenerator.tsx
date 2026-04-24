@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { createClient } from "@/lib/supabase/client";
-import { Sparkles, MapPin, DollarSign, Heart } from "lucide-react";
+import { Sparkles, MapPin, DollarSign, Heart, Bot } from "lucide-react";
 
 type Vibe = "צ'יל" | "אקטיבי" | "רומנטי" | "";
 type Budget = "זול" | "בינוני" | "יקר" | "";
@@ -28,46 +27,31 @@ export default function DateGenerator() {
   const [searched, setSearched] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
-  const supabase = createClient();
-
-  const fallbackIdeas: DateIdea[] = [
-    { id: "1", title: "מרתון סרטים בבית", description: "תעשו פופקורן, תבנו אוהל שמיכות ותראו 3 סרטים ברצף.", vibe: "צ'יל", budget: "זול", location_type: "בפנים" },
-    { id: "2", title: "ארוחת ערב יוקרתית וקוקטיילים", description: "תתלבשו יפה ותלכו למסעדה החדשה והשווה בעיר.", vibe: "רומנטי", budget: "יקר", location_type: "בפנים" },
-    { id: "3", title: "טיול שקיעה ופיקניק", description: "תארזו סל עם גבינות ויין, ותטפסו להר כדי לראות את השקיעה.", vibe: "אקטיבי", budget: "בינוני", location_type: "בחוץ" },
-    { id: "4", title: "נסיעה ותצפית כוכבים", description: "סעו מחוץ לעיר, תשכבו על מכסה המנוע ותסתכלו על כוכבים נופלים.", vibe: "צ'יל", budget: "זול", location_type: "בחוץ" },
-    { id: "5", title: "סדנת בישול זוגית", description: "תלמדו להכין פסטה בעבודת יד או סושי ביחד.", vibe: "רומנטי", budget: "בינוני", location_type: "בפנים" },
-    { id: "6", title: "קיר טיפוס", description: "לכו למכון טיפוס ותאתגרו אחד את השנייה על הקירות.", vibe: "אקטיבי", budget: "בינוני", location_type: "בפנים" },
-  ];
-
   const handleGenerate = async () => {
     if (!vibe || !budget || !locationType) return;
     
     setLoading(true);
     setSearched(true);
     setErrorMsg("");
+    setIdeas([]);
 
     try {
-      const { data, error } = await supabase
-        .from('date_ideas')
-        .select('*')
-        .eq('vibe', vibe)
-        .eq('budget', budget)
-        .eq('location_type', locationType)
-        .limit(10);
+      const res = await fetch("/api/generate-date", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ vibe, budget, locationType })
+      });
 
-      let finalIdeas = data || [];
+      const data = await res.json();
 
-      if (error || finalIdeas.length === 0) {
-        finalIdeas = fallbackIdeas.filter(idea => 
-          idea.vibe === vibe && idea.budget === budget && idea.location_type === locationType
-        );
-      }
+      if (!res.ok) throw new Error(data.error || "Failed AI fetch");
+      if (!data.ideas || data.ideas.length === 0) throw new Error("Empty AI array");
 
-      const shuffled = finalIdeas.sort(() => 0.5 - Math.random());
-      setIdeas(shuffled.slice(0, 3));
-    } catch (err) {
-      setErrorMsg("שגיאה במשיכת הנתונים. נשתמש בגיבוי.");
-      setIdeas(fallbackIdeas.slice(0, 3));
+      const generatedIdeas = data.ideas.map((idea: any, i: number) => ({ ...idea, id: i.toString() }));
+      setIdeas(generatedIdeas);
+    } catch (err: any) {
+      console.error(err);
+      setErrorMsg("הבינה המלאכותית נתקלה בבעיה. אנא שימו לב ש-API KEY מוגדר כראוי או נסו שוב.");
     } finally {
       setLoading(false);
     }
@@ -75,9 +59,9 @@ export default function DateGenerator() {
 
   const getVibeIcon = (v: string) => {
     switch (v) {
-      case "צ'יל": return <span className="text-xl">☕</span>;
-      case "אקטיבי": return <span className="text-xl">🧗</span>;
-      case "רומנטי": return <span className="text-xl">🍷</span>;
+      case "צ'יל": return <span className="text-xl leading-none">☕</span>;
+      case "אקטיבי": return <span className="text-xl leading-none">🧗</span>;
+      case "רומנטי": return <span className="text-xl leading-none">🍷</span>;
       default: return null;
     }
   };
@@ -85,8 +69,11 @@ export default function DateGenerator() {
   return (
     <div className="w-full max-w-4xl mx-auto py-12 px-6 bg-[#FaFaFa]" dir="rtl">
       <div className="text-center mb-12">
-        <h2 className="text-3xl font-light tracking-wide text-foreground mb-4">מחולל דייטים</h2>
-        <p className="text-foreground/60 max-w-xl mx-auto">לא יכולים להחליט מה לעשות? תנו ליקום (ולמסד הנתונים שלנו) להחליט בשבילכם. ענו על 3 שאלות קצרות וקבלו רעיונות לדייט מושלם.</p>
+        <div className="flex items-center justify-center gap-2 text-brand-gold mb-4">
+          <Bot size={24} />
+          <h2 className="text-3xl font-light tracking-wide text-foreground">מחולל דייטים (AI)</h2>
+        </div>
+        <p className="text-foreground/60 max-w-xl mx-auto">לא יכולים להחליט מה לעשות? תנו לבינה מלאכותית לייצר לכם רעיונות חדשים לחלוטין. ענו על 3 שאלות קצרות לחוויה מושלמת.</p>
       </div>
 
       <div className="grid md:grid-cols-2 gap-12">
@@ -100,9 +87,9 @@ export default function DateGenerator() {
                 <button
                   key={v}
                   onClick={() => setVibe(v as Vibe)}
-                  className={`px-4 py-2 rounded-full border text-sm transition-all ${vibe === v ? "bg-brand-gold text-white border-brand-gold shadow-md" : "border-brand-border/50 hover:border-brand-gold text-foreground/80 hover:bg-brand-gold/5"}`}
+                  className={`px-4 py-2 rounded-full border text-sm transition-all flex items-center gap-2 ${vibe === v ? "bg-brand-gold text-white border-brand-gold shadow-md" : "border-brand-border/50 hover:border-brand-gold text-foreground/80 hover:bg-brand-gold/5"}`}
                 >
-                  {getVibeIcon(v)} <span className="mr-2">{v}</span>
+                  {getVibeIcon(v)} <span>{v}</span>
                 </button>
               ))}
             </div>
@@ -145,13 +132,13 @@ export default function DateGenerator() {
           <button
             onClick={handleGenerate}
             disabled={!vibe || !budget || !locationType || loading}
-            className="w-full py-4 mt-4 bg-brand-gold text-white rounded-lg flex items-center justify-center gap-2 tracking-widest text-sm font-semibold hover:bg-brand-gold/90 transition-all disabled:opacity-50"
+            className="w-full py-4 mt-4 bg-brand-gold text-white rounded-lg flex items-center justify-center gap-2 tracking-widest text-sm font-semibold hover:bg-brand-gold/90 transition-all shadow-lg hover:shadow-xl disabled:opacity-50"
           >
             {loading ? (
-              <span className="animate-pulse">מתייעץ עם הכוכבים...</span>
+              <span className="animate-pulse flex items-center gap-2"><Bot size={16}/> המערכת מחשבת רעיונות...</span>
             ) : (
               <>
-                מצא רעיונות <Sparkles size={16} />
+                <Sparkles size={16} /> מחולל מבוסס AI
               </>
             )}
           </button>
@@ -165,8 +152,19 @@ export default function DateGenerator() {
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                 className="h-full flex flex-col items-center justify-center text-center p-8 border border-dashed border-brand-border/50 rounded-2xl bg-white/50 text-foreground/40"
               >
-                <Sparkles size={40} className="mb-4 opacity-50" />
-                <p>ממתין לבחירות שלכם...</p>
+                <Bot size={40} className="mb-4 opacity-50" />
+                <p>ממתין לבחירות שלכם כדי לייצר קסם...</p>
+              </motion.div>
+            )}
+
+            {searched && loading && (
+              <motion.div
+                key="loading"
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="h-full flex flex-col items-center justify-center text-center space-y-4"
+              >
+                <div className="w-10 h-10 border-2 border-brand-gold border-t-transparent rounded-full animate-spin mx-auto" />
+                <p className="text-foreground/50 text-sm tracking-wider animate-pulse">חוקר אפשרויות ל-{vibe} תחת התקציב {budget}...</p>
               </motion.div>
             )}
 
@@ -176,34 +174,34 @@ export default function DateGenerator() {
                 initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
                 className="space-y-4"
               >
-                <h3 className="text-xs tracking-widest text-brand-gold mb-6">הרעיונות הנבחרים שלכם</h3>
+                <h3 className="text-xs tracking-widest text-brand-gold mb-6 flex items-center gap-2"><Bot size={14}/> תוצרי בינה מלאכותית</h3>
                 {ideas.map((idea, index) => (
                   <motion.div
                     key={idea.id || index}
                     initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.1 }}
-                    className="p-6 bg-white border border-brand-border/30 rounded-xl shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group"
+                    className="p-6 bg-white border border-brand-border/30 rounded-xl shadow-[0_10px_20px_rgb(0,0,0,0.03)] hover:shadow-lg transition-all relative overflow-hidden group"
                   >
-                    <div className="absolute top-0 right-0 w-1 h-full bg-brand-gold transform translate-x-full group-hover:translate-x-0 transition-transform"/>
-                    <h4 className="text-xl font-medium mb-2">{idea.title}</h4>
+                    <div className="absolute top-0 right-0 w-1 h-full bg-brand-gold transform translate-x-full group-hover:translate-x-0 transition-transform duration-300"/>
+                    <h4 className="text-xl font-medium mb-3">{idea.title}</h4>
                     <p className="text-foreground/70 text-sm leading-relaxed">{idea.description}</p>
-                    <div className="mt-4 flex gap-2">
-                       <span className="text-[10px] tracking-wider px-2 py-1 bg-brand-gold/10 text-brand-gold rounded">{idea.vibe}</span>
-                       <span className="text-[10px] tracking-wider px-2 py-1 bg-brand-gold/10 text-brand-gold rounded">{idea.budget}</span>
-                       <span className="text-[10px] tracking-wider px-2 py-1 bg-brand-gold/10 text-brand-gold rounded">{idea.location_type}</span>
+                    <div className="mt-5 flex flex-wrap gap-2">
+                       <span className="text-[10px] uppercase font-semibold tracking-wider px-2 py-1 bg-brand-gold/10 text-brand-gold rounded">{idea.vibe}</span>
+                       <span className="text-[10px] uppercase font-semibold tracking-wider px-2 py-1 bg-brand-gold/10 text-brand-gold rounded">{idea.budget}</span>
+                       <span className="text-[10px] uppercase font-semibold tracking-wider px-2 py-1 bg-brand-gold/10 text-brand-gold rounded">{idea.location_type}</span>
                     </div>
                   </motion.div>
                 ))}
               </motion.div>
             )}
 
-            {searched && !loading && ideas.length === 0 && (
+            {searched && !loading && errorMsg && (
               <motion.div
-                key="no-results"
+                key="error"
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                className="h-full flex flex-col items-center justify-center text-center p-8 border border-brand-border/50 rounded-2xl bg-white text-foreground/60"
+                className="h-full flex flex-col items-center justify-center text-center p-8 border border-red-200/50 rounded-2xl bg-red-50 text-red-500/80"
               >
-                <p>לא מצאנו רעיון שמתאים בדיוק לכל הפילטרים, אולי ננסה להגמיש קצת את הדרישות?</p>
-                <button onClick={() => { setVibe(""); setBudget(""); setLocationType(""); setSearched(false); }} className="mt-4 text-brand-gold text-sm underline">אפס ונסה שוב</button>
+                <p className="font-medium text-sm">{errorMsg}</p>
+                <button onClick={() => { setSearched(false); setErrorMsg(""); }} className="mt-4 text-xs underline font-semibold text-red-400">אפסו ונסו שוב</button>
               </motion.div>
             )}
           </AnimatePresence>
