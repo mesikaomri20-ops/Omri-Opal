@@ -16,6 +16,26 @@ interface Pin {
   countryId?: string;
 }
 
+interface DBTravel {
+  id?: string;
+  destination?: string;
+  country?: string;
+  year?: number;
+  lat?: number;
+  lng?: number;
+  countryId?: string;
+}
+
+interface TopologyGeography {
+  rsmKey: string;
+  id: string;
+  properties: {
+    name: string;
+  };
+  geometry: object;
+  type: string;
+}
+
 export default function WorldMap() {
   const [pins, setPins] = useState<Pin[]>([]);
   const [tooltipContent, setTooltipContent] = useState("");
@@ -30,7 +50,7 @@ export default function WorldMap() {
     // Attempting to fetch from travels table. Using flexible columns.
     const { data, error } = await supabase.from("travels").select("*");
     if (data) {
-      const formattedPins = data.map((row: any) => ({
+      const formattedPins = data.map((row: DBTravel) => ({
         id: row.id,
         destination: row.destination || row.country || "מיקום נבחר",
         year: row.year || new Date().getFullYear(),
@@ -42,8 +62,8 @@ export default function WorldMap() {
     }
   };
 
-  const handleCountryClick = async (geo: any) => {
-    const centroid = geoCentroid(geo);
+  const handleCountryClick = async (geo: TopologyGeography) => {
+    const centroid = geoCentroid(geo as Parameters<typeof geoCentroid>[0]);
     const lng = centroid[0];
     const lat = centroid[1];
     const countryName = geo.properties.name;
