@@ -1,55 +1,53 @@
 import { NextResponse } from "next/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export async function POST(req: Request) {
-  // התיקון הקריטי: מחיקת רווחים נסתרים מהמפתח ושימוש בספרייה הרשמית
-  const rawKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || "";
-  const apiKey = rawKey.trim();
+  // ניקוי מוחלט של המפתח מכל זבל או רווחים
+  const apiKey = (process.env.GOOGLE_GENERATIVE_AI_API_KEY || "").trim();
 
   if (!apiKey) {
-    console.error("[generate-date] API key missing");
-    return NextResponse.json({ error: "API key missing from Vercel" }, { status: 500 });
+    return NextResponse.json({ error: "API Key is missing in Vercel settings" }, { status: 500 });
   }
 
   try {
     const { vibe, budget, locationType } = await req.json();
 
-    if (!vibe || !budget || !locationType) {
-      return NextResponse.json({ error: "Missing parameters" }, { status: 400 });
-    }
+    // בניית ה-URL היציב ידנית - בלי v1beta!
+    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
     const prompt = `
-    You are a creative date-night planning assistant for a couple in Israel.
-    Generate exactly 3 unique, fun date night ideas based strictly on these constraints:
-    Vibe: ${vibe}
-    Budget: ${budget}
-    Location: ${locationType}
-
-    Respond ONLY with a valid JSON array. No markdown, no extra text.
-    Each object must have:
-    - "title": A short title in Hebrew
-    - "description": 1-2 sentence description in Hebrew
-    - "vibe": "${vibe}"
-    - "budget": "${budget}"
-    - "location_type": "${locationType}"
+      You are a creative date-night planning assistant for a couple in Israel.
+      Generate exactly 3 unique, fun date night ideas in Hebrew based on:
+      Vibe: ${vibe}, Budget: ${budget}, Location: ${locationType}.
+      Return ONLY a JSON array. Each object must have "title", "description", "vibe", "budget", "location_type".
     `;
 
-    // אתחול רשמי של המוח של Gemini
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    console.log("[generate-date] Sending manual fetch to V1 Stable endpoint...");
 
-    console.log("[generate-date] Calling Gemini API natively...");
-    const result = await model.generateContent(prompt);
-    let text = result.response.text();
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }]
+      }),
+    });
 
-    // ניקוי שאריות עיצוב אם ה-AI מתחכם
+    if (!response.ok) {
+      const errorData = await response.text();
+      console.error(`[generate-date] Google API returned ${response.status}:`, errorData);
+      throw new Error(`Google API Error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    let text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+
+    // ניקוי תגיות markdown של JSON אם יש
     text = text.replace(/```json/g, "").replace(/```/g, "").trim();
 
     const ideas = JSON.parse(text);
     return NextResponse.json({ ideas });
 
   } catch (error: any) {
-    console.error("[generate-date] Error:", error.message);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("[generate-date] Final Catch Error:", error.message);
+    return NextResponse.json({ error: "Failed to generate ideas. Please try again." }, { status: 500 });
   }
 }
