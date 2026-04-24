@@ -2,16 +2,23 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
+  // Diagnostic: log key presence on every request (visible in Vercel Function Logs)
+  const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+  console.log("[generate-date] GOOGLE_GENERATIVE_AI_API_KEY present:", !!apiKey);
+
   try {
-    const { vibe, budget, locationType } = await req.json();
+    const body = await req.json();
+    const { vibe, budget, locationType } = body;
+    console.log("[generate-date] Received filters:", { vibe, budget, locationType });
 
     if (!vibe || !budget || !locationType) {
-      return NextResponse.json({ error: "Missing parameters" }, { status: 400 });
+      console.error("[generate-date] Missing one or more filter parameters");
+      return NextResponse.json({ error: "Missing parameters: vibe, budget, locationType are all required" }, { status: 400 });
     }
 
-    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
     if (!apiKey) {
-      return NextResponse.json({ error: "API key missing from environment" }, { status: 500 });
+      console.error("[generate-date] GOOGLE_GENERATIVE_AI_API_KEY is undefined — check Vercel Environment Variables");
+      return NextResponse.json({ error: "Server configuration error: API key missing" }, { status: 500 });
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
@@ -53,7 +60,11 @@ Example:
 
     return NextResponse.json({ ideas });
   } catch (error: any) {
-    console.error("Gemini Error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("[generate-date] Unhandled error:", error?.message ?? error);
+    console.error("[generate-date] Full error object:", JSON.stringify(error, Object.getOwnPropertyNames(error)));
+    return NextResponse.json(
+      { error: error?.message ?? "Unknown server error in generate-date route" },
+      { status: 500 }
+    );
   }
 }
