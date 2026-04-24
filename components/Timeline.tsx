@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
 import Image from "next/image";
+import PhotoAlbum from "@/components/PhotoAlbum";
 
 interface TimelineMedia {
   id: string;
@@ -37,8 +38,6 @@ export default function Timeline({ events = [] }: TimelineProps) {
   const [loading, setLoading] = useState(true);
   const [uploadingYear, setUploadingYear] = useState<number | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-
-  // Lightbox state
   const [lightboxItem, setLightboxItem] = useState<TimelineMedia | null>(null);
 
   const supabase = createClient();
@@ -77,9 +76,7 @@ export default function Timeline({ events = [] }: TimelineProps) {
 
   const initUpload = (year: number) => {
     setSelectedYearForUpload(year);
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
+    if (fileInputRef.current) fileInputRef.current.click();
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -99,10 +96,7 @@ export default function Timeline({ events = [] }: TimelineProps) {
 
       if (uploadError) throw uploadError;
 
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from("journey-images").getPublicUrl(filePath);
-
+      const { data: { publicUrl } } = supabase.storage.from("journey-images").getPublicUrl(filePath);
       const detectedType: "image" | "video" = isVideoFile(file) ? "video" : "image";
 
       const newEntry = {
@@ -172,7 +166,7 @@ export default function Timeline({ events = [] }: TimelineProps) {
   return (
     <>
       <div className="w-full max-w-6xl mx-auto px-4 relative flex flex-col items-center">
-        {/* Hidden File Input — accepts images AND videos */}
+        {/* Hidden File Input */}
         <input
           type="file"
           ref={fileInputRef}
@@ -203,7 +197,7 @@ export default function Timeline({ events = [] }: TimelineProps) {
         })}
       </div>
 
-      {/* ─────────── Lightbox ─────────── */}
+      {/* Lightbox */}
       <AnimatePresence>
         {lightboxItem && (
           <LightboxModal item={lightboxItem} onClose={() => setLightboxItem(null)} />
@@ -213,9 +207,7 @@ export default function Timeline({ events = [] }: TimelineProps) {
   );
 }
 
-/* ════════════════════════════════════════════════════
-   Lightbox Modal — image OR video with controls
-   ════════════════════════════════════════════════════ */
+/* ════════════ Lightbox ════════════ */
 
 function LightboxModal({ item, onClose }: { item: TimelineMedia; onClose: () => void }) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -226,13 +218,8 @@ function LightboxModal({ item, onClose }: { item: TimelineMedia; onClose: () => 
   const togglePlay = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!videoRef.current) return;
-    if (videoRef.current.paused) {
-      videoRef.current.play();
-      setIsPlaying(true);
-    } else {
-      videoRef.current.pause();
-      setIsPlaying(false);
-    }
+    if (videoRef.current.paused) { videoRef.current.play(); setIsPlaying(true); }
+    else { videoRef.current.pause(); setIsPlaying(false); }
   };
 
   const toggleMute = (e: React.MouseEvent) => {
@@ -252,14 +239,12 @@ function LightboxModal({ item, onClose }: { item: TimelineMedia; onClose: () => 
       onClick={onClose}
     >
       <div className="relative w-full max-w-5xl h-full flex items-center justify-center">
-        {/* Close Button */}
         <button
           className="absolute top-4 right-4 md:top-8 md:right-8 z-[110] text-white/50 hover:text-white transition-colors"
           onClick={(e) => { e.stopPropagation(); onClose(); }}
         >
           <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18" />
-            <line x1="6" y1="6" x2="18" y2="18" />
+            <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
           </svg>
         </button>
 
@@ -277,59 +262,31 @@ function LightboxModal({ item, onClose }: { item: TimelineMedia; onClose: () => 
                 ref={videoRef}
                 src={item.image_url}
                 className="max-w-full max-h-full rounded-xl object-contain"
-                muted
-                playsInline
-                loop
+                muted playsInline loop
                 onClick={togglePlay}
               />
-
-              {/* Video Controls */}
               <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-black/50 backdrop-blur-md rounded-full px-6 py-3 z-20">
-                {/* Play / Pause */}
                 <button onClick={togglePlay} className="text-white/80 hover:text-white transition-colors">
-                  {isPlaying ? (
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16" rx="1" /><rect x="14" y="4" width="4" height="16" rx="1" /></svg>
-                  ) : (
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3" /></svg>
-                  )}
+                  {isPlaying
+                    ? <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+                    : <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>}
                 </button>
-
-                {/* Mute / Unmute */}
                 <button onClick={toggleMute} className="text-white/80 hover:text-white transition-colors">
-                  {isMuted ? (
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-                      <line x1="23" y1="9" x2="17" y2="15" />
-                      <line x1="17" y1="9" x2="23" y2="15" />
-                    </svg>
-                  ) : (
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-                      <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
-                      <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
-                    </svg>
-                  )}
+                  {isMuted
+                    ? <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+                    : <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>}
                 </button>
               </div>
-
-              {/* Big Play overlay when paused */}
               {!isPlaying && (
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                   <div className="w-20 h-20 rounded-full bg-black/40 backdrop-blur flex items-center justify-center">
-                    <svg width="36" height="36" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3" /></svg>
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                   </div>
                 </div>
               )}
             </div>
           ) : (
-            <Image
-              src={item.image_url}
-              alt="Fullscreen Memory"
-              fill
-              className="object-contain"
-              sizes="100vw"
-              quality={100}
-            />
+            <Image src={item.image_url} alt="Fullscreen Memory" fill className="object-contain" sizes="100vw" quality={100} />
           )}
         </motion.div>
       </div>
@@ -337,9 +294,7 @@ function LightboxModal({ item, onClose }: { item: TimelineMedia; onClose: () => 
   );
 }
 
-/* ════════════════════════════════════════════════════
-   Timeline Card (per year)
-   ════════════════════════════════════════════════════ */
+/* ════════════ Timeline Card ════════════ */
 
 interface TimelineCardProps {
   year: number;
@@ -363,8 +318,14 @@ function TimelineCard({ year, index, album, isUploading, onUpload, eventData, on
 
   const scaleProgress = useTransform(scrollYProgress, [0, 1], [0.85, 1]);
   const opacityProgress = useTransform(scrollYProgress, [0, 1], [0.4, 1]);
-
   const isEven = index % 2 === 0;
+
+  // Map TimelineMedia to PhotoAlbum format
+  const photoItems = album.map(item => ({
+    id: item.id,
+    url: item.image_url,
+    fileType: (item.file_type === "video" || isVideoUrl(item.image_url, item.file_type) ? "video" : "image") as "image" | "video",
+  }));
 
   return (
     <motion.div
@@ -373,9 +334,10 @@ function TimelineCard({ year, index, album, isUploading, onUpload, eventData, on
       className={`relative w-full flex items-center justify-between mb-24 md:mb-40 z-10 ${isEven ? "flex-row" : "flex-row-reverse"}`}
       dir="ltr"
     >
+      {/* Timeline dot */}
       <div className="absolute left-1/2 top-1/2 w-4 h-4 md:w-5 md:h-5 rounded-full bg-brand-gold border-[4px] border-background -translate-x-1/2 -translate-y-1/2 z-20 shadow-[0_0_15px_rgba(212,175,55,0.4)]" />
 
-      {/* Year and Event Display */}
+      {/* Year + Event */}
       <div className={`w-[45%] flex flex-col ${isEven ? "items-end pr-8 md:pr-16 text-right" : "items-start pl-8 md:pl-16 text-left"}`}>
         <h2 className="text-5xl md:text-8xl font-light text-brand-gold/20 tracking-tighter select-none">{year}</h2>
         {eventData && (
@@ -386,108 +348,46 @@ function TimelineCard({ year, index, album, isUploading, onUpload, eventData, on
         )}
       </div>
 
-      {/* Gallery */}
-      <div className={`w-[50%] md:w-[45%] flex ${isEven ? "justify-start" : "justify-end"}`}>
-        <div className={`flex w-full overflow-x-auto gap-4 pb-4 snap-x snap-mandatory hide-scrollbars ${isEven ? "flex-row" : "flex-row-reverse"}`}>
-          {album.map((item) => {
-            const isDeleting = deletingId === item.id;
-            const isVideo = item.file_type === "video" || isVideoUrl(item.image_url, item.file_type);
+      {/* Photo Album + Upload button */}
+      <div className={`w-[50%] md:w-[45%] flex flex-col gap-6 ${isEven ? "items-start pl-4" : "items-end pr-4"}`}>
+        {photoItems.length > 0 && (
+          <PhotoAlbum
+            images={photoItems}
+            year={year}
+            onImageClick={(url) => {
+              const item = album.find(a => a.image_url === url);
+              if (item) onMediaClick(item);
+            }}
+            onDelete={(id) => {
+              const item = album.find(a => a.id === id);
+              if (item) onDelete(item);
+            }}
+            deletingId={deletingId}
+          />
+        )}
 
-            return (
-              <div
-                key={item.id}
-                className="flex-shrink-0 snap-center relative w-[240px] md:w-[280px] aspect-[4/5] rounded-2xl overflow-hidden backdrop-blur-md bg-white/40 border border-brand-border/40 shadow-[0_15px_30px_rgb(0,0,0,0.06)] hover:shadow-[0_25px_50px_rgb(0,0,0,0.12)] transition-all duration-500 transform hover:-translate-y-2 group"
-              >
-                <div
-                  onClick={() => !isDeleting && onMediaClick(item)}
-                  className={`w-full h-full cursor-pointer ${isDeleting ? "opacity-50" : ""}`}
-                >
-                  {isVideo ? (
-                    <>
-                      <video
-                        src={item.image_url}
-                        className="absolute inset-0 w-full h-full object-cover"
-                        muted
-                        playsInline
-                        preload="metadata"
-                      />
-                      {/* Play icon overlay */}
-                      <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-                        <div className="w-14 h-14 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center shadow-lg">
-                          <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
-                            <polygon points="5 3 19 12 5 21 5 3" />
-                          </svg>
-                        </div>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <Image
-                        src={item.image_url}
-                        alt={`Memory from ${year}`}
-                        fill
-                        sizes="(max-width: 768px) 50vw, 33vw"
-                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-500 flex items-center justify-center opacity-0 group-hover:opacity-100 z-10 pointer-events-none">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="drop-shadow-md">
-                          <path d="M15 3h6v6" />
-                          <path d="M9 21H3v-6" />
-                          <path d="M21 3l-7 7" />
-                          <path d="M3 21l7-7" />
-                        </svg>
-                      </div>
-                    </>
-                  )}
-                </div>
-
-                {/* Delete Button */}
-                {!isDeleting && (
-                  <button
-                    onClick={(e) => { e.stopPropagation(); onDelete(item); }}
-                    className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-black/40 hover:bg-black/70 backdrop-blur-md flex items-center justify-center text-white/80 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all duration-300"
-                    title="מחיקה"
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M3 6h18" />
-                      <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                      <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                    </svg>
-                  </button>
-                )}
-
-                {/* Deleting Spinner */}
-                {isDeleting && (
-                  <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-                    <div className="w-8 h-8 border-2 border-white/80 border-t-transparent rounded-full animate-spin" />
-                  </div>
-                )}
+        {/* Add Memory */}
+        <div
+          onClick={onUpload}
+          className="cursor-pointer w-full max-w-xs h-14 rounded-xl backdrop-blur-md bg-white/20 border border-brand-border/40 border-dashed hover:border-brand-gold/60 hover:bg-brand-gold/5 shadow-sm transition-all duration-300 flex items-center justify-center group"
+        >
+          {isUploading ? (
+            <div className="flex items-center gap-3">
+              <div className="w-6 h-6 border-2 border-brand-gold border-t-transparent rounded-full animate-spin" />
+              <span className="text-xs text-foreground/60 tracking-widest">מעלה...</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-3 text-brand-gold/60 group-hover:text-brand-gold transition-colors">
+              <div className="w-7 h-7 rounded-full border border-current flex items-center justify-center opacity-80">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
               </div>
-            );
-          })}
-
-          {/* Add Memory Card */}
-          <div
-            onClick={onUpload}
-            className="flex-shrink-0 snap-center relative w-[240px] md:w-[280px] aspect-[4/5] cursor-pointer rounded-2xl overflow-hidden backdrop-blur-md bg-white/20 border border-brand-border/40 border-dashed hover:border-brand-gold/50 shadow-sm hover:shadow-[0_15px_30px_rgb(0,0,0,0.04)] transition-all duration-500 ease-out flex items-center justify-center group"
-          >
-            {isUploading ? (
-              <div className="flex flex-col items-center space-y-4 z-10">
-                <div className="w-8 h-8 md:w-10 md:h-10 border-2 border-brand-gold border-t-transparent rounded-full animate-spin" />
-                <span className="text-xs font-light text-foreground/60 tracking-[0.2em] uppercase">מעלה...</span>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center space-y-4 text-brand-gold/60 group-hover:text-brand-gold transition-colors duration-500">
-                <div className="w-12 h-12 rounded-full border border-current flex items-center justify-center opacity-80">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="12" y1="5" x2="12" y2="19" />
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                  </svg>
-                </div>
-                <span className="text-xs tracking-[0.2em] font-medium uppercase">{album.length > 0 ? "הוספו עוד" : `הוסיפו זיכרון ראשון ל-${year}`}</span>
-              </div>
-            )}
-          </div>
+              <span className="text-[11px] tracking-widest font-medium uppercase">
+                {album.length > 0 ? "הוספו עוד" : `הוסיפו זיכרון ל-${year}`}
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </motion.div>

@@ -77,3 +77,14 @@ export const countryTranslations: Record<string, string> = {
 export function translateCountry(englishName: string): string {
   return countryTranslations[englishName] || englishName;
 }
+
+// Countries to exclude from rendering and the dropdown
+export const BLOCKED_COUNTRIES = new Set([
+  "Palestine",
+  "Palestinian Territory",
+  "West Bank",
+]);
+
+export function isBlockedCountry(name: string): boolean {
+  return BLOCKED_COUNTRIES.has(name);
+}
